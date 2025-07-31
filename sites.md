@@ -3,10 +3,12 @@
 https://jobs.ea.com/en_US/careers/Home/?8171=%5B10618%2C10577%5D&8171_format=5683&4537=%5B8693%5D&4537_format=3020&listFilterMode=1&jobRecordsPerPage=20&
 
 ## IBM
-https://www.ibm.com/careers/search?field_keyword_18[0]=Internship&field_keyword_05[0]=United%20States
+site: https://www.ibm.com/careers/search?field_keyword_18[0]=Internship&field_keyword_05[0]=United%20States
+POST: https://www-api.ibm.com/search/api/v2
 
 ## Hitmarker
-https://hitmarker.net/jobs?location=233+39&contract=internship
+site: https://hitmarker.net/jobs?location=233+39&contract=internship
+POST: https://search.hitmarker.com/multi_search?q=*
 
 ## Epic Games
 https://www.epicgames.com/site/en-US/careers/jobs?type=Intern&page=1
