@@ -8,12 +8,19 @@ import requests, json, glob
 from constants import (
     TIMEOUT,
     HITS_SAVE_DIR,
-    JOBS_SAVE_DIR,
-    build_path)
+    JOBS_SAVE_DIR)
+from util_fetch_io import (
+    save_hits,
+    save_jobs,
+    load_objects
+    )
 
+SOURCE = "hitmarker"
+
+# endpoint found in .har file
 ENDPOINT = "https://search.hitmarker.com/multi_search?q="
 
-# Headers copied from HAR
+# Headers copied from .har file
 HEADERS = {
     "User-Agent":        "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:141.0) Gecko/20100101 Firefox/141.0",
     "Accept":            "application/json, text/plain, */*",
@@ -27,6 +34,7 @@ HEADERS = {
     "Sec-GPC": "1",
 }
 
+# Payload copied from .har file
 PAYLOAD = {
     "searches": [
         {
@@ -51,50 +59,8 @@ PAYLOAD = {
 # I/O #
 #######
 
-def _build_hitmarker_path(
-        job_id,
-        *,
-        dir         :str,
-        make_dir    :bool
-) -> str:
-    return build_path("hitmarker", job_id, dir=dir, make_dir=make_dir)
-
-def _save_hits(
-        hits          :list,
-        *,
-        verbose       :bool = False
-) -> None:
-    for h in hits:
-        job_id = h.get("document", {}).get("id", "None")
-        if job_id == "None":
-            raise ValueError('Could not find h["_id"]')
-        path = _build_hitmarker_path(job_id, dir=HITS_SAVE_DIR, make_dir=True)
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump(h, f, indent=2, ensure_ascii=False)
-
-def _save_jobs(
-        jobs          :list,
-        *,
-        verbose       :bool = False
-) -> None:
-    for j in jobs:
-        job_id = j["id"]
-        path = _build_hitmarker_path(job_id, dir=JOBS_SAVE_DIR, make_dir=True)
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump(j, f, indent=2, ensure_ascii=False)
-
-def _load(
-        dir         :str,
-        verbose     :bool = False
-) -> list:
-    elements = []
-    pattern = _build_hitmarker_path("*", dir=dir, make_dir=False)
-    for path in glob.glob(pattern):
-      with open(path, encoding="utf-8") as f:
-          e = json.load(f)
-      elements.append(e)
-    verbose and print(f"Loaded {len(elements)} elements from pattern: \"{pattern}\"")
-    return elements
+def _parse_id(hit) -> str:
+    return hit.get("document", {}).get("id", "None")
 
 ###############
 # FETCH/PARSE #
@@ -145,7 +111,7 @@ def _fetch_hits(
     hits = data["results"][0]["hits"]
     verbose and print(f"Fetched {len(hits)} hits from \"{ENDPOINT}\"")
     if save_local:
-      _save_hits(hits, verbose=verbose)
+      save_hits(hits, source=SOURCE, id_fn=_parse_id, verbose=verbose)
     return hits
 
 # NOTE: All the keys referenced were derived from the .har file
@@ -172,13 +138,12 @@ def _parse_jobs_from_hits(
             }
         jobs.append(job)
     if save_local:
-        _save_jobs(jobs, verbose=verbose)
+        save_jobs(jobs, SOURCE, verbose=verbose)
     return jobs
 
 ###########
 # EXECUTE #
 ###########
-
 
 def parse_jobs_fetch_hits(
         timeout_seconds :int  = TIMEOUT,
@@ -194,15 +159,15 @@ def parse_jobs_cached_hits(
         save_local  :bool = True,
         verbose     :bool = False
 ) -> list:
-    hits = _load(HITS_SAVE_DIR, verbose=verbose)
+    hits = load_objects(source=SOURCE, dir=HITS_SAVE_DIR, verbose=verbose)
     return _parse_jobs_from_hits(hits, save_local=save_local, verbose=verbose)
 
 def load_cached_jobs(
         *,
         verbose :bool = False
 ) -> list:
-    return _load(JOBS_SAVE_DIR, verbose=verbose)
+    return load_objects(source=SOURCE, dir=JOBS_SAVE_DIR, verbose=verbose)
 
 if __name__ == "__main__":
-    for job in parse_jobs_fetch_hits():
+    for job in parse_jobs_fetch_hits(verbose=True):
         print(f"{job['title']} | {job['location']} | {job['url']}")

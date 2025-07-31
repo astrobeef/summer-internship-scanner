@@ -12,8 +12,14 @@ from constants import (
     TIMEOUT,
     HITS_SAVE_DIR,
     JOBS_SAVE_DIR,
-    build_path,
 )
+from util_fetch_io import (
+    save_hits,
+    save_jobs,
+    load_objects
+    )
+
+SOURCE = "epicgames"
 
 # Greenhouse proxy from epicgames.har
 ENDPOINT = (
@@ -40,50 +46,8 @@ HEADERS = {
 # I/O #
 #######
 
-def _build_epic_path(
-        job_id      :str,
-        *,
-        dir         :str,
-        make_dir    :bool
-) -> str:
-    return build_path("epic", job_id, dir=dir, make_dir=make_dir)
-
-def _save_hits(
-        hits    :list,
-        *,
-        verbose :bool = False
-) -> None:
-    for h in hits:
-        job_id = str(h.get("id", "None"))
-        if job_id == "None":
-            raise ValueError('Could not find id in hit')
-        path = _build_epic_path(job_id, dir=HITS_SAVE_DIR, make_dir=True)
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump(h, f, indent=2, ensure_ascii=False)
-    verbose and print(f"Saved {len(hits)} raw hits")
-
-def _save_jobs(
-        jobs: list,
-        *,
-        verbose: bool = False
-) -> None:
-    for j in jobs:
-        path = _build_epic_path(j["id"], dir=JOBS_SAVE_DIR, make_dir=True)
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump(j, f, indent=2, ensure_ascii=False)
-
-def _load(
-        dir         :str,
-        verbose     :bool = False
-) -> list:
-    elements = []
-    pattern = _build_epic_path("*", dir=dir, make_dir=False)
-    for path in glob.glob(pattern):
-      with open(path, encoding="utf-8") as f:
-          e = json.load(f)
-      elements.append(e)
-    verbose and print(f"Loaded {len(elements)} elements from pattern: \"{pattern}\"")
-    return elements
+def _parse_id(hit) -> str:
+    return hit.get("id", "None")
 
 ############
 #  FETCH   #
@@ -91,8 +55,8 @@ def _load(
 
 # NOTE: All the keys referenced were derived from the .har file
 def _fetch_hits(
-    *,
     timeout_seconds: int,
+    *,
     save_local: bool,
     verbose: bool,
 ) -> list:
@@ -114,7 +78,7 @@ def _fetch_hits(
     total = data.get("total", 0)
     verbose and print(f"Fetched {len(hits)} / total={total} hits from Epic")
     if save_local and hits:
-        _save_hits(hits, verbose=verbose)
+        save_hits(hits, source=SOURCE, id_fn=_parse_id, verbose=verbose)
     return hits
 
 def _format_location(loc_name: str | None) -> str:
@@ -165,7 +129,7 @@ def _parse_jobs_from_hits(
         )
         jobs.append(job)
     if save_local:
-        _save_jobs(jobs, verbose=verbose)
+        save_jobs(jobs, SOURCE, verbose=verbose)
     return jobs
 
 ###########
@@ -178,7 +142,7 @@ def parse_jobs_fetch_hits(
     save_local      :bool   = True,
     verbose         :bool   = False,
 ) -> list:
-    hits = _fetch_hits(timeout_seconds=timeout_seconds, save_local=save_local, verbose=verbose)
+    hits = _fetch_hits(timeout_seconds, save_local=save_local, verbose=verbose)
     return _parse_jobs_from_hits(hits, verbose=verbose)
 
 def parse_jobs_cached_hits(
@@ -186,14 +150,14 @@ def parse_jobs_cached_hits(
         save_local  :bool = True,
         verbose     :bool = False
 ) -> list:
-    hits = _load(HITS_SAVE_DIR, verbose=verbose)
+    hits = load_objects(source=SOURCE, dir=HITS_SAVE_DIR, verbose=verbose)
     return _parse_jobs_from_hits(hits, save_local=save_local, verbose=verbose)
 
 def load_cached_jobs(
         *,
         verbose :bool = False
 ) -> list:
-    return _load(JOBS_SAVE_DIR, verbose=verbose)
+    return load_objects(source=SOURCE, dir=JOBS_SAVE_DIR, verbose=verbose)
 
 if __name__ == "__main__":
     for job in parse_jobs_cached_hits(verbose=True):
