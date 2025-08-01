@@ -7,7 +7,9 @@ import json, requests, glob
 from constants import (
     TIMEOUT,
     HITS_SAVE_DIR,
-    JOBS_SAVE_DIR,)
+    JOBS_SAVE_DIR,
+    Job
+    )
 from util_fetch_io import (
     save_hits,
     save_jobs,
@@ -161,18 +163,18 @@ def _parse_jobs_from_hits(
         *,
         save_local  :bool,
         verbose     :bool
-) -> list:
+) -> list[Job]:
     jobs = []
     for h in hits:
         doc = h["_source"]
-        job = {
-            "source": "IBM",
-            "id": h["_id"],
-            "title": doc["title"],
-            "url":  doc["url"],
-            "location": doc.get("field_keyword_19", ""),
-            "contract_type": doc.get("field_keyword_18", ""),
-            "unique_meta": {
+        job: Job = {
+            "source"        :SOURCE,
+            "id"            :h["_id"],
+            "title"         : doc["title"],
+            "url"           : doc["url"],
+            "location"      : doc.get("field_keyword_19", ""),
+            "contract_type" : doc.get("field_keyword_18", ""),
+            "unique_meta"   : {
                 "area_of_work": doc.get("field_keyword_08", ""),
                 "work_env": doc.get("field_keyword_17", ""),
             }
@@ -191,7 +193,7 @@ def parse_jobs_fetch_hits(
         *,
         save_local      :bool = True,
         verbose         :bool = False
-) -> list:
+) -> list[Job]:
     hits = _fetch_hits(timeout_seconds, save_local=save_local, verbose=verbose)
     return _parse_jobs_from_hits(hits, save_local=save_local, verbose=verbose)
 
@@ -199,14 +201,14 @@ def parse_jobs_cached_hits(
         *,
         save_local  :bool = True,
         verbose     :bool = False
-) -> list:
+) -> list[Job]:
     hits = load_objects(source=SOURCE, dir=HITS_SAVE_DIR, verbose=verbose)
     return _parse_jobs_from_hits(hits, save_local=save_local, verbose=verbose)
 
 def load_cached_jobs(
         *,
         verbose :bool = False
-) -> list:
+) -> list[Job]:
     return load_objects(source=SOURCE, dir=JOBS_SAVE_DIR, verbose=verbose)
 
 if __name__ == "__main__":

@@ -12,6 +12,7 @@ from constants import (
     TIMEOUT,
     HITS_SAVE_DIR,
     JOBS_SAVE_DIR,
+    Job
 )
 from util_fetch_io import (
     save_hits,
@@ -107,26 +108,24 @@ def _parse_jobs_from_hits(
         *,
         save_local  :bool,
         verbose     :bool
-) -> list:
-    jobs: list = []
+) -> list[Job]:
+    jobs: list[Job] = []
     for h in hits:
         location_str = h.get("location", {}).get("name", "")
-        job = (
-            {
-                "source": "Epic Games",
-                "id": h["id"],
-                "title":  h["title"],
-                "url":    h["absolute_url"],
-                "location": _format_location(location_str),
-                "contract_type":  h["type"],
-                "unique_meta": {
+        job: Job = {
+            "source"        :SOURCE,
+            "id"            :h["id"],
+            "title"         :h["title"],
+            "url"           :h["absolute_url"],
+            "location"      :_format_location(location_str),
+            "contract_type" :h["type"],
+            "unique_meta"   :{
                     "department":      h.get("department", ""),
                     "company":         h.get("company_name", ""),
                     "remote":          h.get("remote", False),
                     "updated_epoch":   h.get("updated_at"),
-                },
-            }
-        )
+                }
+        }
         jobs.append(job)
     if save_local:
         save_jobs(jobs, SOURCE, verbose=verbose)
@@ -141,7 +140,7 @@ def parse_jobs_fetch_hits(
     *,
     save_local      :bool   = True,
     verbose         :bool   = False,
-) -> list:
+) -> list[Job]:
     hits = _fetch_hits(timeout_seconds, save_local=save_local, verbose=verbose)
     return _parse_jobs_from_hits(hits, verbose=verbose)
 
@@ -149,14 +148,14 @@ def parse_jobs_cached_hits(
         *,
         save_local  :bool = True,
         verbose     :bool = False
-) -> list:
+) -> list[Job]:
     hits = load_objects(source=SOURCE, dir=HITS_SAVE_DIR, verbose=verbose)
     return _parse_jobs_from_hits(hits, save_local=save_local, verbose=verbose)
 
 def load_cached_jobs(
         *,
         verbose :bool = False
-) -> list:
+) -> list[Job]:
     return load_objects(source=SOURCE, dir=JOBS_SAVE_DIR, verbose=verbose)
 
 if __name__ == "__main__":
