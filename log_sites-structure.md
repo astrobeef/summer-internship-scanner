@@ -38,18 +38,32 @@
 
 ## EA Games
 - Container: `<div class="results results--listed ">`
-- Post Structure (no posts atm):
+- Post Structure (no internships atm, so using regular job post structure):
     ~~~html
-<div class="results results--listed ">
-   <article class="article article--result p--v--xl ">
-            <div class="article__header">
-                <div class="article__header__text">
-                    <h3 class="article__header__text__title title title--06 f-color--brand" data-au="ag-h3-7">
-                        No jobs found                                     </h3>
-                </div>
-            </div>
-        </article>
-</div>
+<article class="article article--result article--non-toggle" id="article--1">
+  <div class="article__header">
+    <div class="article__header__text">
+      <h3 class="article__header__text__title title title--04">
+        <a class="link link_result" href="https://jobs.ea.com/en_US/careers/JobDetail/Development-Director-I/210016">
+          Development Director Live Ops (Temporary)
+        </a>
+      </h3>
+      <div class="article__header__text__subtitle">
+        <span class="list-item-location">Vancouver, Canada</span>
+        <span class="separator">&nbsp;•&nbsp;</span>
+        <span class="list-item-jobPostingLocation">
+          <span class="list-item-0">Edmonton, Canada</span>
+        </span>
+        <span class="separator">&nbsp;•&nbsp;</span>
+        <span class="list-item-id">Role ID 210016</span>
+        <span class="separator">&nbsp;•&nbsp;</span>
+        <span class="list-item-workerType">Temporary Employee</span>
+        <span class="separator">&nbsp;•&nbsp;</span>
+        <span class="list-item-department">EA Studios - Full Circle</span>
+      </div>
+    </div>
+  </div>
+</article>
     ~~~
 
 ## IBM
@@ -128,45 +142,6 @@
         <p class="copy text-center job-list__notice">No jobs found for your current filters.
         </p>
     </ul>
-    ~~~
-
-## Activision Games
-- Container: `<div class="phw-content-block" role="list" data-ps="cef1322e-div-7">`
-- Paging notes:
-    - Page 1: https://careers.activision.com/search-results?keywords=intern
-    - Page 2: https://careers.activision.com/search-results?keywords=intern&from=10&s=1
-    - Page 3: https://careers.activision.com/search-results?keywords=intern&from=20&s=1
-- Structure:
-    ~~~html
-    <div data-ph-at-id="jobs-list">
-    <div data-ph-at-id="jobs-list-item">
-        <h3>
-        <a data-ph-at-id="job-link"
-            href="https://careers.activision.com/job/R025623/Product-Manager-Gaming-Ads">
-            Product Manager – Gaming Ads
-        </a>
-        </h3>
-
-        <div data-ph-at-id="jobdescription-text">
-        Are you looking for an exciting opportunity to shape immersive ad experiences… <!-- truncated -->
-        </div>
-
-        <div data-ph-at-id="job-cityStateCountry">
-        San Francisco, California, United States of America
-        </div>
-
-        <div data-ph-at-id="job-category">Production</div>
-        <div data-ph-at-id="job-reqId">R025623</div>
-        <div data-ph-at-id="job-jobCompany">
-        961 ACTIVISION BLIZZARD MEDIA LIMITED
-        </div>
-
-        <a data-ph-at-id="apply-link"
-        href="https://careers.activision.com/apply?jobSeqNo=ACPUUSR025623EXTERNAL">
-        Apply Now
-        </a>
-    </div>
-    </div>
     ~~~
 
 ## Abbott Health Care
@@ -300,7 +275,7 @@
     </li>
     ~~~
 
-## NVIDIA & Intel
+## NVIDIA & Intel & Activision
 - Container: `<ul aria-label="Page 1 of 1" role="list">`
     - NOTE: There are multiple `ul role="list"` on the page
 - Paging Info: Unknown (only one page)

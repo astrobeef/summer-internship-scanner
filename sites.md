@@ -17,7 +17,8 @@ https://www.epicgames.com/site/en-US/careers/jobs?type=Intern&page=1
 https://www.riotgames.com/en/university-programs#roles
 
 ## Activision Games
-https://careers.activision.com/search-results?keywords=intern
+https://activision.wd1.myworkdayjobs.com/External?locationCountry=bc33aa3152ec42d4995f4791a106ed09
+^- It turns out Activision's job site on their website is just a wrapper for the workday page. This was causing a headache for me trying to fetch their jobs until I figured this out.
 
 ## Abbott Health Care
 https://www.jobs.abbott/us/en/search-results?rk=l-early-careers&sortBy=Most%20relevant
