@@ -1,5 +1,5 @@
 """
-Scrapes server-rendered job listings from Riot Games' public board.
+Scrapes HTML job listings from Riot Games' public board.
 """
 # first-party
 from __future__ import annotations
@@ -51,7 +51,11 @@ def _format_location(text: str) -> str:
     """
     return text.strip()
 
-def _parse_jobs_from_html(html: str, *, verbose: bool = False) -> list[Job]:
+def _parse_jobs_from_html(
+        html        :str,
+        *,
+        verbose     :bool = False
+) -> list[Job]:
     soup = BeautifulSoup(html, "html.parser")
     ul   = soup.select_one("ul.job-list__body")
     if not ul:
@@ -89,23 +93,23 @@ def _parse_jobs_from_html(html: str, *, verbose: bool = False) -> list[Job]:
 
 def fetch_riot_jobs(
     *,
-    timeout_seconds: int = TIMEOUT,
-    save_local: bool = True,
-    verbose: bool = False,
+    timeout_seconds :int    = TIMEOUT,
+    save_local      :bool   = True,
+    verbose         :bool   = False,
 ) -> list[Job]:
     """
     GET the Riot board HTML, parse to job dicts, optionally save.
     """
     try:
-        resp = requests.get(RIOT_URL, headers=HEADERS, timeout=timeout_seconds)
-        resp.raise_for_status()
+        response = requests.get(RIOT_URL, headers=HEADERS, timeout=timeout_seconds)
+        response.raise_for_status()
     except requests.exceptions.Timeout:
         raise RuntimeError("Riot Games request timed out")
     except requests.HTTPError as exc:
         raise RuntimeError(
-            f"Riot Games request failed: {resp.status_code} {resp.text}"
+            f"Riot Games request failed: {response.status_code} {response.text}"
         ) from exc
-    jobs = _parse_jobs_from_html(resp.text, verbose=verbose)
+    jobs = _parse_jobs_from_html(response.text, verbose=verbose)
     if save_local and jobs:
         save_jobs(jobs, SOURCE, verbose=verbose)
     return jobs
