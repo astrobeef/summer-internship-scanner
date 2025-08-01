@@ -1,5 +1,5 @@
 """
-IBM uses a JSON POST response to return all of its job data, meaning we can call this POST directly instead of parsing rendered HTML.
+Hitmarker uses a JSON GET endpoint to return all of its job data, meaning we can call this GET directly instead of parsing rendered HTML.
 """
 # first-party
 from __future__ import annotations

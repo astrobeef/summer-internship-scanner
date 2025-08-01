@@ -1,8 +1,7 @@
 """
-fetch_epic.py
+Hitmarker uses a JSON GET endpoint to return all of its job data, meaning we can call this GET directly instead of parsing rendered HTML.
 Epic Games internships come from a Greenhouse-proxy JSON GET endpoint.
-Right now the endpoint returns an empty ``hits`` list; if that changes
-the script raises NotImplementedError so parsers can be added quickly.
+# NOTE Right now the endpoint returns an empty ``hits`` list
 """
 # first-party
 from __future__ import annotations
