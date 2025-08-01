@@ -1,5 +1,4 @@
 """
-Hitmarker uses a JSON GET endpoint to return all of its job data, meaning we can call this GET directly instead of parsing rendered HTML.
 Epic Games internships come from a Greenhouse-proxy JSON GET endpoint.
 # NOTE Right now the endpoint returns an empty ``hits`` list
 """
