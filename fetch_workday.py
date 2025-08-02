@@ -52,15 +52,6 @@ workday_sites: list[WorkdaySite] = [
             "job_url_prefix"    :"https://intel.wd1.myworkdayjobs.com/en-US/External"
         },
         {
-            "source"            :"intel",
-            "endpoint"          :"https://intel.wd1.myworkdayjobs.com/wday/cxs/intel/External/jobs",
-            "referer"           :"https://intel.wd1.myworkdayjobs.com/External?workerSubType=dc8bf79476611087dfde99931439ae75",
-            "applied_facets"    :{
-                "workerSubType"   :["dc8bf79476611087dfde99931439ae75"],
-            },
-            "job_url_prefix"    :"https://intel.wd1.myworkdayjobs.com/en-US/External"
-        },
-        {
             "source"            :"nvidia",
             "endpoint"          :"https://nvidia.wd5.myworkdayjobs.com/wday/cxs/nvidia/NVIDIAExternalCareerSite/jobs",
             "referer"           :"https://nvidia.wd5.myworkdayjobs.com/External",
