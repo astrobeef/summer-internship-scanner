@@ -38,9 +38,7 @@ HEADERS = {
 # Properties parsed from HAR. No internships atm, so unable to filter for them.
 PAYLOAD = {
     "appliedFacets": {
-        "locationCountry":["bc33aa3152ec42d4995f4791a106ed09"],
-        "jobFamilyGroup	":["d5b22c2cbd48013cad00235c009aaa19",
-                           "d5b22c2cbd480127a6ee0a5c009a9e19"]
+        "locationCountry":["bc33aa3152ec42d4995f4791a106ed09"]
     },
     "limit": 20,
     "offset": 0,

@@ -13,3 +13,10 @@ class Job(TypedDict):
     location        :str
     contract_type   :str
     unique_meta     :dict
+
+class WorkdaySite(TypedDict):
+    source          :str
+    endpoint        :str
+    referer         :str
+    applied_facets  :dict
+    job_url_prefix  :str
