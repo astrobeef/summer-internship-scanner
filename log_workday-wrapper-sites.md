@@ -1,0 +1,4 @@
+# Workday Wrapper
+I noticed that Activision and Abbott are just workday wrappers at their core. This makes it very difficult to parse their websites directly. Instead, it is better to use the workday site. The way I caught this (for Abbott) was the familiar "getJobStatusListV2" property of one of the XHR widget responses. I remember seeing this when I was struggling to understand what was going on with Activision (before I knew it was a wrapper).
+
+So, a tip: if a website seems to have neither static job posts (HTML) nor JSON job information (API), then it may be a Workday wrapper site. In that case, look for a widgets API call which contains a response property "getJobStatusListV2".

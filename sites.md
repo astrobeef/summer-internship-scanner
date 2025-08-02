@@ -21,7 +21,8 @@ https://activision.wd1.myworkdayjobs.com/External?locationCountry=bc33aa3152ec42
 ^- It turns out Activision's job site on their website is just a wrapper for the workday page. This was causing a headache for me trying to fetch their jobs until I figured this out.
 
 ## Abbott Health Care
-https://www.jobs.abbott/us/en/search-results?rk=l-early-careers&sortBy=Most%20relevant
+https://abbott.wd5.myworkdayjobs.com/abbottcareers?Location_Country=bc33aa3152ec42d4995f4791a106ed09&Location_Country=a30a87ed25634629aa6c3958aa2b91ea&workerSubType=d0663057a84410077d944a83d8896dd3
+^- Again, turns out Abbott's job site on their website is just a wrapper for a workday page.
 
 ## Zenimax Games
 https://jobs.zenimax.com/jobs?department=&located=&location=
