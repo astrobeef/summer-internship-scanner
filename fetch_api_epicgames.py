@@ -46,7 +46,7 @@ HEADERS = {
 #######
 
 def _parse_id(hit) -> str:
-    return hit.get("id", "None")
+    return hit["id"]
 
 ############
 #  FETCH   #
@@ -54,10 +54,10 @@ def _parse_id(hit) -> str:
 
 # NOTE: All the keys referenced were derived from the .har file
 def _fetch_hits(
-    timeout_seconds: int,
+    timeout_seconds :int,
     *,
-    save_local: bool,
-    verbose: bool,
+    save_local      :bool,
+    verbose         :bool,
 ) -> list:
     try:
         response = requests.get(
@@ -102,17 +102,17 @@ def _format_location(loc_name: str | None) -> str:
 
 # NOTE: All the keys referenced were derived from the .har file
 def _parse_jobs_from_hits(
-        hits        :list,
-        *,
-        save_local  :bool,
-        verbose     :bool
+    hits        :list,
+    *,
+    save_local  :bool,
+    verbose     :bool
 ) -> list[Job]:
     jobs: list[Job] = []
     for h in hits:
         location_str = h.get("location", {}).get("name", "")
         job: Job = {
             "source"        :SOURCE,
-            "id"            :h["id"],
+            "id"            :_parse_id(h),
             "title"         :h["title"],
             "url"           :h["absolute_url"],
             "location"      :_format_location(location_str),
@@ -143,16 +143,16 @@ def parse_jobs_fetch_hits(
     return _parse_jobs_from_hits(hits, verbose=verbose)
 
 def parse_jobs_cached_hits(
-        *,
-        save_local  :bool = True,
-        verbose     :bool = False
+    *,
+    save_local  :bool = True,
+    verbose     :bool = False
 ) -> list[Job]:
     hits = load_objects(source=SOURCE, dir=HITS_SAVE_DIR, verbose=verbose)
     return _parse_jobs_from_hits(hits, save_local=save_local, verbose=verbose)
 
 def load_cached_jobs(
-        *,
-        verbose :bool = False
+    *,
+    verbose :bool = False
 ) -> list[Job]:
     return load_objects(source=SOURCE, dir=JOBS_SAVE_DIR, verbose=verbose)
 

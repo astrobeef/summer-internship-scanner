@@ -62,7 +62,7 @@ PAYLOAD = {
 #######
 
 def _parse_id(hit) -> str:
-    return hit.get("document", {}).get("id", "None")
+    return hit.get("document", {})["id"]
 
 ###############
 # FETCH/PARSE #
@@ -128,7 +128,7 @@ def _parse_jobs_from_hits(
         doc = h["document"]
         job: Job = {
             "source"        :SOURCE,
-            "id"            :doc["id"],
+            "id"            :_parse_id(h),
             "title"         :doc["title"],
             "url"           :"https://hitmarker.net" + doc["url"]
                              if doc["url"].startswith("/") else doc["url"],

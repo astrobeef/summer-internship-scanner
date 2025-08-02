@@ -126,7 +126,7 @@ PAYLOAD = json.loads(
 #######
 
 def _parse_id(hit) -> str:
-    return hit.get("_id", "None")
+    return hit["_id"]
 
 ###############
 # FETCH/PARSE #
@@ -169,7 +169,7 @@ def _parse_jobs_from_hits(
         doc = h["_source"]
         job: Job = {
             "source"        :SOURCE,
-            "id"            :h["_id"],
+            "id"            :_parse_id(h),
             "title"         : doc["title"],
             "url"           : doc["url"],
             "location"      : doc.get("field_keyword_19", ""),
