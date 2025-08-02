@@ -1,5 +1,5 @@
 """
-Activision jobs are fetched from the Workday API endpoint via POST.
+Intel jobs are fetched from the Workday API endpoint via POST.
 No cookies or CSRF token are needed for public listings.
 # NOTE: Workday response
 """
@@ -18,11 +18,11 @@ from util_fetch_io import (
     load_objects
 )
 
-SOURCE = "activision"
+SOURCE = "intel"
 
 # Derived from HAR
 # NOTE: Filtering is done in PAYLOAD, not in URL
-ENDPOINT = "https://activision.wd1.myworkdayjobs.com/wday/cxs/activision/External/jobs"
+ENDPOINT = "https://intel.wd1.myworkdayjobs.com/wday/cxs/intel/External/jobs"
 
 # Derived from HAR
 HEADERS = {
@@ -32,15 +32,13 @@ HEADERS = {
     ),
     "Accept": "application/json",
     "Content-Type": "application/json",
-    "Referer": "https://activision.wd1.myworkdayjobs.com/External",
+    "Referer": "https://intel.wd1.myworkdayjobs.com/External?workerSubType=dc8bf79476611087dfde99931439ae75",
 }
 
-# Properties parsed from HAR. No internships atm, so unable to filter for them.
+# Properties parsed from HAR. Change filter on site to see more options.
 PAYLOAD = {
     "appliedFacets": {
-        "locationCountry":["bc33aa3152ec42d4995f4791a106ed09"],
-        "jobFamilyGroup	":["d5b22c2cbd48013cad00235c009aaa19",
-                           "d5b22c2cbd480127a6ee0a5c009a9e19"]
+        "workerSubType":["dc8bf79476611087dfde99931439ae75"]
     },
     "limit": 20,
     "offset": 0,
@@ -74,15 +72,15 @@ def _fetch_hits(
         )
         response.raise_for_status()
     except requests.exceptions.Timeout:
-        raise RuntimeError("Activision request timed out")
+        raise RuntimeError("Intel Request timed out")
     except requests.HTTPError as exc:
         raise RuntimeError(
-            f"Activision request failed: {response.status_code} {response.text}"
+            f"Intel Request failed: {response.status_code} {response.text}"
         ) from exc
     data = response.json()
     hits = data.get("jobPostings", [])
     total = data.get("total", 0)
-    verbose and print(f"Fetched {len(hits)} / total={total} hits from Activision")
+    verbose and print(f"Fetched {len(hits)} / total={total} hits from Intel")
     if save_local and hits:
         save_hits(hits, source=SOURCE, id_fn=_parse_id, verbose=verbose)
     return hits
@@ -100,7 +98,7 @@ def _parse_jobs_from_hits(
             "source"        : SOURCE,
             "id"            : _parse_id(h),
             "title"         : h.get("title", ""),
-            "url"           : "https://activision.wd1.myworkdayjobs.com/en-US/External" + h.get("externalPath", ""),
+            "url"           : "https://intel.wd1.myworkdayjobs.com/en-US/External" + h.get("externalPath", ""),
             "location"      : h["locationsText"],
             "contract_type" : "",        # Not provided
             "unique_meta"   : {

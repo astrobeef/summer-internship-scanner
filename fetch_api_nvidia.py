@@ -1,5 +1,5 @@
 """
-Activision jobs are fetched from the Workday API endpoint via POST.
+NVIDIA jobs are fetched from the Workday API endpoint via POST.
 No cookies or CSRF token are needed for public listings.
 # NOTE: Workday response
 """
@@ -18,11 +18,11 @@ from util_fetch_io import (
     load_objects
 )
 
-SOURCE = "activision"
+SOURCE = "nvidia"
 
 # Derived from HAR
 # NOTE: Filtering is done in PAYLOAD, not in URL
-ENDPOINT = "https://activision.wd1.myworkdayjobs.com/wday/cxs/activision/External/jobs"
+ENDPOINT = "https://nvidia.wd5.myworkdayjobs.com/wday/cxs/nvidia/NVIDIAExternalCareerSite/jobs"
 
 # Derived from HAR
 HEADERS = {
@@ -32,15 +32,15 @@ HEADERS = {
     ),
     "Accept": "application/json",
     "Content-Type": "application/json",
-    "Referer": "https://activision.wd1.myworkdayjobs.com/External",
+    "Referer": "https://nvidia.wd5.myworkdayjobs.com/External",
 }
 
 # Properties parsed from HAR. No internships atm, so unable to filter for them.
 PAYLOAD = {
     "appliedFacets": {
-        "locationCountry":["bc33aa3152ec42d4995f4791a106ed09"],
-        "jobFamilyGroup	":["d5b22c2cbd48013cad00235c009aaa19",
-                           "d5b22c2cbd480127a6ee0a5c009a9e19"]
+        "locationHierarchy1":["2fcb99c455831013ea529c3b93ba3236",
+                              "2fcb99c455831013ea52fb338f2932d8"],
+        "workerSubType":["0c40f6bd1d8f10adf6dae42e46d44a17"]
     },
     "limit": 20,
     "offset": 0,
@@ -100,7 +100,7 @@ def _parse_jobs_from_hits(
             "source"        : SOURCE,
             "id"            : _parse_id(h),
             "title"         : h.get("title", ""),
-            "url"           : "https://activision.wd1.myworkdayjobs.com/en-US/External" + h.get("externalPath", ""),
+            "url"           : "https://nvidia.wd5.myworkdayjobs.com/en-US/NVIDIAExternalCareerSite" + h.get("externalPath", ""),
             "location"      : h["locationsText"],
             "contract_type" : "",        # Not provided
             "unique_meta"   : {
