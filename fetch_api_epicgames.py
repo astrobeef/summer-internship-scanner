@@ -140,7 +140,7 @@ def parse_jobs_fetch_hits(
     verbose         :bool   = False,
 ) -> list[Job]:
     hits = _fetch_hits(timeout_seconds, save_local=save_local, verbose=verbose)
-    return _parse_jobs_from_hits(hits, verbose=verbose)
+    return _parse_jobs_from_hits(hits, save_local=save_local, verbose=verbose)
 
 def parse_jobs_cached_hits(
     *,

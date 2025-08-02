@@ -23,8 +23,8 @@ workday_sites: list[WorkdaySite] = [
         {
             "source"            :"abbott",
             "endpoint"          :"https://abbott.wd5.myworkdayjobs.com/wday/cxs/abbott/abbottcareers/jobs",
-            "referer"           :"https://abbott.wd5.myworkdayjobs.com/abbottcareers?Location_Country=bc33aa3152ec42d4995f4791a106ed09&Location_Country=a30a87ed25634629aa6c3958aa2b91ea&workerSubType=d0663057a84410077d944a83d8896dd3",
-            "applied_facets"    :{
+            "Referer"           :"https://abbott.wd5.myworkdayjobs.com/abbottcareers?Location_Country=bc33aa3152ec42d4995f4791a106ed09&Location_Country=a30a87ed25634629aa6c3958aa2b91ea&workerSubType=d0663057a84410077d944a83d8896dd3",
+            "appliedFacets"    :{
                 "Location_Country"   :["bc33aa3152ec42d4995f4791a106ed09",
                                        "a30a87ed25634629aa6c3958aa2b91ea"],
                 "workerSubType"     :["d0663057a84410077d944a83d8896dd3"]
@@ -34,8 +34,8 @@ workday_sites: list[WorkdaySite] = [
         {
             "source"            :"activision",
             "endpoint"          :"https://activision.wd1.myworkdayjobs.com/wday/cxs/activision/External/jobs",
-            "referer"           :"https://activision.wd1.myworkdayjobs.com/External",
-            "applied_facets"    :{
+            "Referer"           :"https://activision.wd1.myworkdayjobs.com/External",
+            "appliedFacets"    :{
                 "locationCountry"   :["bc33aa3152ec42d4995f4791a106ed09"],
                 "jobFamilyGroup"    :["d5b22c2cbd48013cad00235c009aaa19",
                                       "d5b22c2cbd480127a6ee0a5c009a9e19"]
@@ -45,8 +45,8 @@ workday_sites: list[WorkdaySite] = [
         {
             "source"            :"intel",
             "endpoint"          :"https://intel.wd1.myworkdayjobs.com/wday/cxs/intel/External/jobs",
-            "referer"           :"https://intel.wd1.myworkdayjobs.com/External?workerSubType=dc8bf79476611087dfde99931439ae75",
-            "applied_facets"    :{
+            "Referer"           :"https://intel.wd1.myworkdayjobs.com/External?workerSubType=dc8bf79476611087dfde99931439ae75",
+            "appliedFacets"    :{
                 "workerSubType"   :["dc8bf79476611087dfde99931439ae75"],
             },
             "job_url_prefix"    :"https://intel.wd1.myworkdayjobs.com/en-US/External"
@@ -54,13 +54,23 @@ workday_sites: list[WorkdaySite] = [
         {
             "source"            :"nvidia",
             "endpoint"          :"https://nvidia.wd5.myworkdayjobs.com/wday/cxs/nvidia/NVIDIAExternalCareerSite/jobs",
-            "referer"           :"https://nvidia.wd5.myworkdayjobs.com/External",
-            "applied_facets"    :{
+            "Referer"           :"https://nvidia.wd5.myworkdayjobs.com/External",
+            "appliedFacets"    :{
                 "locationHierarchy1":["2fcb99c455831013ea529c3b93ba3236",
                               "2fcb99c455831013ea52fb338f2932d8"],
                 "workerSubType"     :["0c40f6bd1d8f10adf6dae42e46d44a17"]
             },
             "job_url_prefix"    :"https://nvidia.wd5.myworkdayjobs.com/en-US/NVIDIAExternalCareerSite"
+        },
+        {
+            "source"            :"sonyglobal",
+            "endpoint"          :"https://sonyglobal.wd1.myworkdayjobs.com/wday/cxs/sonyglobal/SonyGlobalCareers/jobs",
+            "Referer"           :"https://sonyglobal.wd1.myworkdayjobs.com/SonyGlobalCareers?workerSubType=7306bd11847f108d51604b3183153b95&locationCountry=bc33aa3152ec42d4995f4791a106ed09",
+            "appliedFacets"    :{
+                "locationCountry":["bc33aa3152ec42d4995f4791a106ed09"],
+                "workerSubType"     :["7306bd11847f108d51604b3183153b95"]
+            },
+            "job_url_prefix"    :"https://sonyglobal.wd1.myworkdayjobs.com/en-US/SonyGlobalCareers"
         },
     ]
 
@@ -101,13 +111,13 @@ def _fetch_hits(
     *,
     source          :str,
     endpoint        :str,
-    referer         :str,
+    Referer         :str,
     applied_facets  :dict,
     save_local      :bool,
     verbose         :bool,
 ) -> list:
     headers = HEADERS.copy()
-    headers["Referer"] = referer
+    headers["Referer"] = Referer
     payload = PAYLOAD.copy()
     payload["appliedFacets"] = applied_facets
     try:
@@ -175,8 +185,8 @@ def parse_jobs_fetch_hits(
             timeout_seconds,
             source              =site["source"],
             endpoint            =site["endpoint"],
-            referer             =site["referer"],
-            applied_facets      =site["applied_facets"],
+            Referer             =site["Referer"],
+            applied_facets      =site["appliedFacets"],
             save_local          =save_local,
             verbose             =verbose
             )

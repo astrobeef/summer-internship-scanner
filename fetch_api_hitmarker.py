@@ -118,10 +118,10 @@ def _fetch_hits(
 
 # NOTE: All the keys referenced were derived from the .har file
 def _parse_jobs_from_hits(
-        hits        :list,
-        *,
-        save_local  :bool,
-        verbose     :bool
+    hits        :list,
+    *,
+    save_local  :bool,
+    verbose     :bool
 ) -> list[Job]:
     jobs = []
     for h in hits:
@@ -149,18 +149,18 @@ def _parse_jobs_from_hits(
 ###########
 
 def parse_jobs_fetch_hits(
-        timeout_seconds :int  = TIMEOUT,
-        *,
-        save_local      :bool = True,
-        verbose         :bool = False
+    timeout_seconds :int    = TIMEOUT,
+    *,
+    save_local      :bool   = True,
+    verbose         :bool   = False,
 ) -> list[Job]:
     hits = _fetch_hits(timeout_seconds, save_local=save_local, verbose=verbose)
     return _parse_jobs_from_hits(hits, save_local=save_local, verbose=verbose)
 
 def parse_jobs_cached_hits(
-        *,
-        save_local  :bool = True,
-        verbose     :bool = False
+    *,
+    save_local  :bool = True,
+    verbose     :bool = False
 ) -> list[Job]:
     hits = load_objects(source=SOURCE, dir=HITS_SAVE_DIR, verbose=verbose)
     return _parse_jobs_from_hits(hits, save_local=save_local, verbose=verbose)

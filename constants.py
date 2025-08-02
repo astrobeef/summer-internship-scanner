@@ -17,6 +17,6 @@ class Job(TypedDict):
 class WorkdaySite(TypedDict):
     source          :str
     endpoint        :str
-    referer         :str
-    applied_facets  :dict
+    Referer         :str
+    appliedFacets  :dict
     job_url_prefix  :str

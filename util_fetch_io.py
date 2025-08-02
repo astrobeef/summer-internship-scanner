@@ -51,7 +51,7 @@ def save_jobs(
         path = _build_path(source, job_id, dir=JOBS_SAVE_DIR, make_dir=True, verbose=verbose)
         with path.open("w", encoding="utf-8") as f:
             json.dump(j, f, indent=2, ensure_ascii=False)
-    verbose and print(f"Saved {len(jobs)} structured josb for {source}")
+    verbose and print(f"Saved {len(jobs)} structured jobs for {source}")
     return
 
 def load_objects(
