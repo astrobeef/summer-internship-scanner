@@ -55,6 +55,3 @@ https://careers.honeywell.com/en/sites/Honeywell/jobs?keyword=intern&lastSelecte
 
 ## Obsidian Games
 https://www.obsidian.net/careers/internships#open-positions
-
-## Respawn Games
-https://www.respawn.com/internships
