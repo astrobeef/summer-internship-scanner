@@ -3,6 +3,7 @@ import json
 import re
 # local
 from openai_create_client import (build_cache_query_path)
+from constants import Response
 
 
 def _load_response():
@@ -35,7 +36,7 @@ def _parse_json(response_str) -> dict | None:
             pass
     return None
 
-def load_openai_response(date = None):
+def load_openai_response(date = None) -> Response:
     response_str    = _load_response()
     response        = _parse_json(response_str)
     return response
