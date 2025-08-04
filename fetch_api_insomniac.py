@@ -89,17 +89,18 @@ def _parse_jobs_from_hits(
             "source": SOURCE,
             "id": _parse_id(h),
             "title": h["title"],
-            "url": h["absolute_url"],
+            "url": f"https://job-boards.greenhouse.io/insomniac/jobs/{_parse_id(h)}",       # Post shown at greenhouse. Absolute URL does not parse well
             "location": _format_location(h),
             "contract_type": "",    # not provided
             "unique_meta": {
+                "absolute_url"  :h["absolute_url"],
                 "updated_at": h.get("updated_at", ""),
                 "first_published": h.get("first_published", ""),
             }
         }
         jobs.append(job)
     if save_local:
-        save_jobs(jobs, SOURCE, verbose=verbose)
+        save_jobs(jobs, verbose=verbose)
     return jobs
 
 def parse_jobs_fetch_hits(

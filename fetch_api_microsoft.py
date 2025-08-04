@@ -15,7 +15,7 @@ from util_fetch_io import (
     load_objects
 )
 
-URL = "https://jobs.careers.microsoft.com/global/en/search?lc=Canada&lc=United%20States&d=Software%20Engineering&exp=Students%20and%20graduates&l=en_us&pg=1&pgSz=20&o=Relevance&flt=true"
+URL = "https://jobs.careers.microsoft.com/global/en/job/"
 
 SOURCE = "microsoft"
 
@@ -86,7 +86,7 @@ def _parse_jobs_from_hits(
             "source"        : SOURCE,
             "id"            : _parse_id(h),
             "title"         : h["title"],
-            "url"           : URL,  # Not included within hit
+            "url"           : f"{URL}{_parse_id(h)}",  # Not included within hit, but structured this way
             "location"      : properties["primaryLocation"],
             "contract_type" : properties["jobType"],
             "unique_meta": {
@@ -99,7 +99,7 @@ def _parse_jobs_from_hits(
         }
         jobs.append(job)
     if save_local:
-        save_jobs(jobs, SOURCE, verbose=verbose)
+        save_jobs(jobs, verbose=verbose)
     return jobs
 
 def parse_jobs_fetch_hits(

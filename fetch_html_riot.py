@@ -111,7 +111,7 @@ def fetch_riot_jobs(
         ) from exc
     jobs = _parse_jobs_from_html(response.text, verbose=verbose)
     if save_local and jobs:
-        save_jobs(jobs, SOURCE, verbose=verbose)
+        save_jobs(jobs, verbose=verbose)
     return jobs
 
 ###########

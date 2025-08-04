@@ -114,19 +114,20 @@ def _parse_jobs_from_hits(
             "source"        :SOURCE,
             "id"            :_parse_id(h),
             "title"         :h["title"],
-            "url"           :h["absolute_url"],
+            "url"           :f"https://boards-api.greenhouse.io/v1/boards/epicgames/jobs/{_parse_id(h)}",       # This is used for greenhouse posts (absolute URL gives 403)
             "location"      :_format_location(location_str),
             "contract_type" :h["type"],
             "unique_meta"   :{
-                    "department":      h.get("department", ""),
-                    "company":         h.get("company_name", ""),
-                    "remote":          h.get("remote", False),
-                    "updated_epoch":   h.get("updated_at"),
+                    "department":       h.get("department", ""),
+                    "company":          h.get("company_name", ""),
+                    "remote":           h.get("remote", False),
+                    "updated_epoch":    h.get("updated_at"),
+                    "absolute_url":     h["absolute_url"],
                 }
         }
         jobs.append(job)
     if save_local:
-        save_jobs(jobs, SOURCE, verbose=verbose)
+        save_jobs(jobs, verbose=verbose)
     return jobs
 
 ###########
@@ -157,5 +158,5 @@ def load_cached_jobs(
     return load_objects(source=SOURCE, dir=JOBS_SAVE_DIR, verbose=verbose)
 
 if __name__ == "__main__":
-    for job in parse_jobs_cached_hits(verbose=True):
+    for job in parse_jobs_fetch_hits(verbose=True):
         print(f"{job['title']} | {job['location']} | {job['url']}")

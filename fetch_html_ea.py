@@ -53,14 +53,21 @@ def _format_location(article: BeautifulSoup) -> str:
     return " / ".join(locations)
 
 def _parse_jobs_from_html(
-        html    :str,
-        *,
-        verbose :bool = False
+    html    :str,
+    *,
+    verbose :bool = False
 ) -> list[Job]:
     soup = BeautifulSoup(html, "html.parser")
     container = soup.select_one("div.results.results--listed")
     if not container:
         verbose and print("<div.results.results--listed> not found.")
+        return []
+    # Check for the "No jobs found" article
+    no_jobs_article = container.select_one(
+        "article.article--result h3.article__header__text__title"
+    )
+    if no_jobs_article and "no jobs found" in no_jobs_article.get_text(strip=True).lower():
+        verbose and print("No jobs found in results.")
         return []
     jobs: list[Job] = []
     for article in container.select("article.article--result"):
@@ -114,7 +121,7 @@ def fetch_ea_jobs(
         ) from exc
     jobs = _parse_jobs_from_html(response.text, verbose=verbose)
     if save_local and jobs:
-        save_jobs(jobs, SOURCE, verbose=verbose)
+        save_jobs(jobs, verbose=verbose)
     return jobs
 
 ###########

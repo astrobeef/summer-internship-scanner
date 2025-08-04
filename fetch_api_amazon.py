@@ -144,7 +144,7 @@ def _parse_jobs_from_hits(
         }
         jobs.append(job)
     if save_local:
-        save_jobs(jobs, SOURCE, verbose=verbose)
+        save_jobs(jobs, verbose=verbose)
     return jobs
 
 def parse_jobs_fetch_hits(
