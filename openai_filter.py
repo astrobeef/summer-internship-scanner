@@ -66,6 +66,11 @@ def _compile_jobs_into_msg(
 ) -> str:
     message_addition :str = ''
     for j in jobs:
+        raw_desc = j.get("description")
+        if isinstance(raw_desc, str) and raw_desc:
+            desc_trunc = raw_desc[:DESC_MAX_LENGTH]
+        else:
+            desc_trunc = "No description available"
         next_entry = (
             f"source:{j["source"]}\n"
             f"id:{j["id"]}\n"
@@ -74,7 +79,7 @@ def _compile_jobs_into_msg(
             f"location:{j["location"]}\n"
             f"contract_type:{j["contract_type"]}\n"
             f"unique_meta:{json.dumps(j["unique_meta"])}\n"
-            f"unique_meta:{j["description"][:DESC_MAX_LENGTH]}\n"
+            f"description:{desc_trunc}\n"
             )
         if (token_budget < num_tokens(message + message_addition + next_entry + question, model=model)):
             break
