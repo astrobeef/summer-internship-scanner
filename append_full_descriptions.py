@@ -121,6 +121,8 @@ def augment_jobs_with_descriptions(
         if verbose:
             print(f"[OK] {job['source']} {job['id']}  length={len(clean_text)}")
         time.sleep(throttle)
+    if save_local:
+        save_jobs(jobs, dir=DETAILED_JOBS_SAVE_DIR, verbose=True)
     return jobs
 
 if __name__ == "__main__":
