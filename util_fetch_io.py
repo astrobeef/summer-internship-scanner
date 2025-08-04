@@ -1,6 +1,7 @@
 # first-party
 import glob, json, os
 from pathlib import Path
+import sys
 # local
 from constants import (
     HITS_SAVE_DIR,
@@ -73,3 +74,23 @@ def load_objects(
       elements.append(e)
     verbose and print(f"Loaded {len(elements)} objects from pattern: \"{pattern_path}\"")
     return elements
+
+def load_all_jobs(
+        dir     :str
+) -> list[Job]:
+    """Load all job dictionaries from JSON files in the specified directory."""
+    jobs = []
+    for fname in os.listdir(dir):
+        if not fname.endswith(".json"):
+            continue
+        fpath = os.path.join(dir, fname)
+        try:
+            with open(fpath, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if isinstance(data, dict):
+                    jobs.append(data)
+                else:
+                    jobs.extend(data)
+        except Exception as e:
+            print(f"[FAIL] Loading {fpath}: {e}", file=sys.stderr)
+    return jobs

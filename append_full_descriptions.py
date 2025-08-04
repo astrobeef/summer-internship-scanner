@@ -10,7 +10,7 @@ from readability import Document
 from playwright.sync_api import sync_playwright
 # local
 from constants import (TIMEOUT, Job)
-from util_fetch_io import save_jobs
+from util_fetch_io import (save_jobs, load_all_jobs)
 from fetch_api_amd import SOURCE as AMD_SOURCE
 from fetch_api_insomniac import SOURCE as INSOMNIAC_SOURCE
 from fetch_html_zenimax import SOURCE as ZENIMAX_SOURCE
@@ -123,27 +123,9 @@ def augment_jobs_with_descriptions(
         time.sleep(throttle)
     return jobs
 
-def load_all_jobs_from_dir(dir_path: str) -> list[Job]:
-    """Load all job dictionaries from JSON files in the specified directory."""
-    jobs = []
-    for fname in os.listdir(dir_path):
-        if not fname.endswith(".json"):
-            continue
-        fpath = os.path.join(dir_path, fname)
-        try:
-            with open(fpath, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                if isinstance(data, dict):
-                    jobs.append(data)
-                else:
-                    jobs.extend(data)
-        except Exception as e:
-            print(f"[FAIL] Loading {fpath}: {e}", file=sys.stderr)
-    return jobs
-
 if __name__ == "__main__":
     jobs_dir = "./data/jobs"
-    jobs = load_all_jobs_from_dir(jobs_dir)
+    jobs = load_all_jobs(jobs_dir)
     print(f"Loaded {len(jobs)} jobs from {jobs_dir}")
     jobs = augment_jobs_with_descriptions(jobs, verbose=True)
     print(f"Finished with {sum('description' in j for j in jobs)} descriptions out of {len(jobs)} total")
