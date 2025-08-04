@@ -137,7 +137,7 @@ def _save_local_query_and_response(
 def filter_jobs(
         jobs            :list[Job],
         *,
-        query           :str,
+        query           :str    = QUESTION,
         model           :str    = GPT_CHEAPEST,
         token_budget    :int    = ASK_TOKEN_BUDGET,
         verbose         :bool   = False,
@@ -169,7 +169,7 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="Filter jobs using OpenAI for Summer 2026 internships.")
     parser.add_argument(
-        "--query", type=str, default="Which of these jobs are internships for Summer 2026, even if only implied by duration or start date?",
+        "--query", type=str, default=QUESTION,
         help="Filtering query. If omitted, uses a default prompt for Summer 2026 internships."
     )
     parser.add_argument(

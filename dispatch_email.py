@@ -68,8 +68,9 @@ def _notify_matches(response: Response):
 def _has_matches(response: Response):
     return len(response["close_match"]) > 0 or len(response["near_match"] > 0)
 
-def dispatch_email():
-    response: Response = load_openai_response()
+def dispatch_email(response: Response = None):
+    if not response:
+        response: Response = load_openai_response()
     if _has_matches(response):
         _notify_matches(response)
     else:

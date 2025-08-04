@@ -17,9 +17,10 @@ import fetch_obsidian
 from constants import (TIMEOUT, Job)
 
 def fetch_all_jobs(
-        timeout :str    = TIMEOUT,
+        timeout     :str    = TIMEOUT,
         *,
-        verbose :bool   = False
+        save_local  :bool   = True,
+        verbose     :bool   = False
 ) -> list[Job]:
     all_jobs: list[Job] = []
     for fetcher in [
@@ -37,7 +38,7 @@ def fetch_all_jobs(
         fetch_riot_jobs,
         fetch_zenimax_jobs,
     ]:
-        jobs = fetcher(timeout_seconds=timeout, verbose=verbose)
+        jobs = fetcher(timeout_seconds=timeout, save_local=save_local, verbose=verbose)
         all_jobs.extend(jobs)
     # Obsidian is presence-only (no jobs if not implemented)
     try:

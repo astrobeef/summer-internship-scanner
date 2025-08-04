@@ -19,7 +19,7 @@ def _load_response():
         print(f"Failed to load JSON from {filepath}: {e}")
         return None
 
-def _parse_response(response_str) -> dict | None:
+def parse_response(response_str :str) -> dict | None:
     """
     Takes a string (OpenAI response) and tries to parse it as JSON.
     """
@@ -37,6 +37,9 @@ def _parse_response(response_str) -> dict | None:
     return None
 
 def load_openai_response(date = None) -> Response:
+    """
+    Loads the saved query structure then parses its response.
+    """
     response_str    = _load_response()
-    response        = _parse_response(response_str)
+    response        = parse_response(response_str)
     return response
