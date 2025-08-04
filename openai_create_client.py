@@ -24,6 +24,21 @@ def num_tokens(
         encoding = tiktoken.get_encoding("cl100k_base")
     return len(encoding.encode(text))
 
+################
+# I/O RESPONSE #
+################
+
+CACHE_QUERY_PATTERN = "./data/openai_response/{date}-response.json"
+
+def build_cache_query_path(date: datetime = None):
+    """
+    Returns a formatted cache file path for the given date (or today if not provided).
+    """
+    if date is None:
+        date = datetime.now()
+    date_str = date.strftime("%Y-%m-%d")
+    return CACHE_QUERY_PATTERN.format(date=date_str)
+
 ##########################
 # LOAD DAILY TOKEN USAGE #
 ##########################
