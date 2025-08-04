@@ -14,13 +14,14 @@ from constants import (
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT   = 465
 
-def _send_email(subject: str, plain_body: str, html_body: str):
+def send_email(subject: str, plain_body: str, html_body: str):
     msg = EmailMessage()
     msg["Subject"] = subject
     msg["From"]    = CONFIG["sender_email"]
     msg["To"]      = CONFIG["recipient_email"]
     msg.set_content(plain_body)
-    msg.add_alternative(html_body, subtype="html")
+    if html_body:
+        msg.add_alternative(html_body, subtype="html")
     with smtplib.SMTP_SSL(SMTP_SERVER, SMTP_PORT) as smtp:
         smtp.login(CONFIG["sender_email"], CONFIG["sender_app_password"])
         smtp.send_message(msg)
@@ -62,7 +63,7 @@ def _notify_matches(response: Response):
     subject = (
         f"Job Scan Results: {len(response['close_match'])} Close, {len(response['near_match'])} Near, {len(response['non_match'])} Non-Matches"
     )
-    _send_email(subject, plain_body, html_body)
+    send_email(subject, plain_body, html_body)
     print("Notification sent.")
 
 def _has_matches(response: Response):
