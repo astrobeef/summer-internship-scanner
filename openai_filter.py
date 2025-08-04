@@ -22,7 +22,7 @@ from openai_create_client import (
 from append_full_descriptions import DETAILED_JOBS_SAVE_DIR
 from openai_prompt import *
 
-DESC_MAX_LENGTH     = 2000#characters
+DESC_MAX_LENGTH     = 500#characters
 
 def _build_gpt_message(query_msg: str) -> list[dict[str,str]]:
     return [
@@ -184,7 +184,7 @@ if __name__ == "__main__":
         "--token_budget", type=int, default=ASK_TOKEN_BUDGET, help="Token budget for GPT call."
     )
     parser.add_argument(
-        "--verbose", action="store_true", help="Print verbose output."
+        "-v", "--verbose", action="store_true", help="Print verbose output."
     )
     parser.add_argument(
         "--no_save_local", action="store_true", help="Do not save local cache of queries/responses."
