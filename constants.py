@@ -26,11 +26,7 @@ class WorkdaySite(TypedDict):
 GPT_MODELS      = ["gpt-4o", "gpt-4.1", "gpt-4.1-mini", "gpt-4o-mini", "gpt-4.1-nano"]      # Ordered by cost (high to low)
 GPT_BEST        = GPT_MODELS[1]#gpt-4.1
 GPT_CHEAPEST    = GPT_MODELS[4]#gpt-4.1-nano
-EMBEDDING_MODEL = "text-embedding-3-small"
-MIN_TOKENS      = 100
-MAX_TOKENS      = 800
-ASK_TOKEN_BUDGET= 4096 - 500
-BATCH_SIZE      = 512      # up to 2048 embedding inputs per request
+ASK_TOKEN_BUDGET= 100_000           # Standard small default is 4096 - 500, but this project needs a larger context
 CHAT_TEMPERATURE= 0
 
 def clean_filename(name: str) -> str:
