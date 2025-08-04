@@ -75,5 +75,3 @@ def dispatch_email(response: Response = None):
         _notify_matches(response)
     else:
         print("Neglecting email since there are no matches")
-
-dispatch_email()
