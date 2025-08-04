@@ -10,16 +10,19 @@ from constants import (
     CHAT_TEMPERATURE,
     ASK_TOKEN_BUDGET,
     Job,
-    clean_filename,
     )
 from util_fetch_io import (load_all_jobs)
-from openai_create_client import (num_tokens, create_client, save_add_daily_tokens_used, is_daily_token_limit_reached)
+from openai_create_client import (
+    num_tokens,
+    create_client,
+    save_add_daily_tokens_used,
+    is_daily_token_limit_reached,
+    build_cache_query_path
+    )
 from append_full_descriptions import DETAILED_JOBS_SAVE_DIR
 from openai_prompt import *
 
 DESC_MAX_LENGTH     = 2000#characters
-CACHE_QUERY_PATH    = "./data/openai_response/"
-QUERY_FILE_NAME_END = 20#characters
 
 def _build_gpt_message(query_msg: str) -> list[dict[str,str]]:
     return [
@@ -114,7 +117,7 @@ def _save_local_query_and_response(
         response        :str = "OMITTED",
         verbose         :bool = False,
 ) -> None:
-    file_path   = _build_query_path(query)
+    file_path   = build_cache_query_path(query)
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
     data        = {
         "query"         : query,
@@ -126,9 +129,6 @@ def _save_local_query_and_response(
     if verbose:
         print(f'Saved query: "{file_path}"')
     return
-
-def _build_query_path(query :str):
-    return f"{CACHE_QUERY_PATH}{clean_filename(query)[0:QUERY_FILE_NAME_END]}.json"
 
 ###########
 # EXECUTE #
@@ -142,7 +142,7 @@ def filter_jobs(
         token_budget    :int    = ASK_TOKEN_BUDGET,
         verbose         :bool   = False,
         save_local      :bool   = True
-) -> list[dict[str,str]] | str:
+) -> str:
     """Answers a query using GPT and a dataframe of relevant texts and embeddings.
     """
     client      = create_client()
@@ -164,3 +164,36 @@ def filter_jobs(
             verbose         =verbose
         )
     return response
+
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(description="Filter jobs using OpenAI for Summer 2026 internships.")
+    parser.add_argument(
+        "--query", type=str, default="Which of these jobs are internships for Summer 2026, even if only implied by duration or start date?",
+        help="Filtering query. If omitted, uses a default prompt for Summer 2026 internships."
+    )
+    parser.add_argument(
+        "--model", type=str, default=GPT_CHEAPEST, help="OpenAI model to use."
+    )
+    parser.add_argument(
+        "--token_budget", type=int, default=ASK_TOKEN_BUDGET, help="Token budget for GPT call."
+    )
+    parser.add_argument(
+        "--verbose", action="store_true", help="Print verbose output."
+    )
+    parser.add_argument(
+        "--no_save_local", action="store_true", help="Do not save local cache of queries/responses."
+    )
+    jobs = load_all_jobs(DETAILED_JOBS_SAVE_DIR)
+    args = parser.parse_args()
+    response = filter_jobs(
+        jobs,
+        query           =args.query,
+        model           =args.model,
+        token_budget    =args.token_budget,
+        verbose         =args.verbose,
+        save_local      =not args.no_save_local
+    )
+
+    print("\n=== FILTERED JOB URLS ===\n")
+    print(response)
