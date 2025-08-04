@@ -6,27 +6,31 @@ import json                         # for writing cached embedding to JSON
 # imports -- local
 from constants import (
     GPT_MODELS,
-    GPT_BEST,
     GPT_CHEAPEST,
-    EMBEDDING_MODEL,
     CHAT_TEMPERATURE,
+    ASK_TOKEN_BUDGET,
     Job,
     clean_filename,
     )
-from openai_create_client import (num_tokens, create_client)
+from util_fetch_io import (load_all_jobs)
+from openai_create_client import (num_tokens, create_client, save_add_daily_tokens_used, is_daily_token_limit_reached)
+from append_full_descriptions import DETAILED_JOBS_SAVE_DIR
+from openai_prompt import *
 
-DESC_MAX_LENGTH     = 1000#characters
+DESC_MAX_LENGTH     = 2000#characters
 CACHE_QUERY_PATH    = "./data/openai_response/"
 QUERY_FILE_NAME_END = 20#characters
-QUERY_INTRO         = ""
 
 def _build_gpt_message(query_msg: str) -> list[dict[str,str]]:
     return [
-        {"role": "system", "content": ("You are an expert job screener. "
-        "Below are several job postings. "
-        "Return a list of the URLs for postings that are internships for Summer 2026 \n\n"
-        "Respond with only a list of URLs that meet the criteria.")},
-        {"role": "user", "content": query_msg}
+        {
+            "role": "system",
+            "content": SYSTEM_PROMPT
+        },
+        {
+            "role": "user",
+            "content": query_msg
+        }
     ]
 
 # NOTE: Calls upon `_gen_query_embedding(..)`, which uses OpenAI query embedding
@@ -84,13 +88,20 @@ def _gen_response(
         messages:list[dict[str,str]],
         model   :str
 ) -> str:
-        response            = client.chat.completions.create(
-        model                   =model,
-        messages                =messages,
-        temperature             =CHAT_TEMPERATURE
-    )
-        response_message    = response.choices[0].message.content
-        return response_message
+    if is_daily_token_limit_reached(model=model):
+        if not is_daily_token_limit_reached(model=GPT_CHEAPEST):
+            print(f"WARNING: Daily token limit reached for parameter model \"{model}\". Switching to cheapest model: \"{GPT_CHEAPEST}\"")
+            model = GPT_CHEAPEST
+        else:
+            raise ValueError(f"Cannot generate response because the daily limit for model \"{model}\" has been reached. If this is an advanced model, basic models may still be available.")
+    response            = client.chat.completions.create(
+    model                   =model,
+    messages                =messages,
+    temperature             =CHAT_TEMPERATURE
+)
+    response_message    = response.choices[0].message.content
+    save_add_daily_tokens_used(response.usage.total_tokens)
+    return response_message
 
 #######
 # I/O #
@@ -128,7 +139,7 @@ def filter_jobs(
         *,
         query           :str,
         model           :str    = GPT_CHEAPEST,
-        token_budget    :int    = 4096 - 500,
+        token_budget    :int    = ASK_TOKEN_BUDGET,
         verbose         :bool   = False,
         save_local      :bool   = True
 ) -> list[dict[str,str]] | str:
