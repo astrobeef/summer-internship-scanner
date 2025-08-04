@@ -4,7 +4,8 @@ from pathlib import Path
 # local
 from constants import (
     HITS_SAVE_DIR,
-    JOBS_SAVE_DIR
+    JOBS_SAVE_DIR,
+    Job
     )
 
 def _build_path(
@@ -27,6 +28,7 @@ def save_hits(
         hits    :list,
         source  :str,
         *,
+        dir     :str = HITS_SAVE_DIR,
         id_fn   :callable,
         verbose :bool = False
 ) -> None:
@@ -34,24 +36,24 @@ def save_hits(
         job_id = str(id_fn(h))
         if not job_id or job_id == "None":
             raise ValueError('Could not find id in hit')
-        path = _build_path(source, job_id, dir=HITS_SAVE_DIR, make_dir=True, verbose=verbose)
+        path = _build_path(source, job_id, dir=dir, make_dir=True, verbose=verbose)
         with path.open("w", encoding="utf-8") as f:
             json.dump(h, f, indent=2, ensure_ascii=False)
     verbose and print(f"Saved {len(hits)} raw hits for {source}")
     return
 
 def save_jobs(
-        jobs    :list,
-        source  :str,
+        jobs    :list[Job],
         *,
+        dir     :str = JOBS_SAVE_DIR,
         verbose :bool = False
 ) -> None:
     for j in jobs:
         job_id = j["id"]
-        path = _build_path(source, job_id, dir=JOBS_SAVE_DIR, make_dir=True, verbose=verbose)
+        path = _build_path(j["source"], job_id, dir=dir, make_dir=True, verbose=verbose)
         with path.open("w", encoding="utf-8") as f:
             json.dump(j, f, indent=2, ensure_ascii=False)
-    verbose and print(f"Saved {len(jobs)} structured jobs for {source}")
+    verbose and print(f"Saved {len(jobs)} structured jobs for {j["source"]}")
     return
 
 def load_objects(
