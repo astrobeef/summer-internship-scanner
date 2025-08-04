@@ -122,7 +122,7 @@ def _save_local_query_and_response(
         response        :str = "OMITTED",
         verbose         :bool = False,
 ) -> None:
-    file_path   = build_cache_query_path(query)
+    file_path   = build_cache_query_path()
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
     data        = {
         "query"         : query,
