@@ -10,6 +10,7 @@ from constants import (
     CHAT_TEMPERATURE,
     ASK_TOKEN_BUDGET,
     Job,
+    Response,
     )
 from util_fetch_io import (load_all_jobs)
 from openai_create_client import (
@@ -21,8 +22,10 @@ from openai_create_client import (
     )
 from append_full_descriptions import DETAILED_JOBS_SAVE_DIR
 from openai_prompt import *
+from openai_parse_response import parse_response
 
-DESC_MAX_LENGTH     = 500#characters
+DESC_MAX_LENGTH     = 1000#characters
+JOBS_PER_BATCH      = 30#jobs
 
 def _build_gpt_message(query_msg: str) -> list[dict[str,str]]:
     return [
@@ -139,6 +142,17 @@ def _save_local_query_and_response(
 # EXECUTE #
 ###########
 
+def _merge_responses(responses: list[Response]) -> Response:
+    merged = {
+        "close_match": [],
+        "near_match": [],
+        "non_match": [],
+    }
+    for resp in responses:
+        for key in merged:
+            merged[key].extend(resp.get(key, []))
+    return merged
+
 def filter_jobs(
         jobs            :list[Job],
         *,
@@ -151,24 +165,31 @@ def filter_jobs(
     """Answers a query using GPT and a dataframe of relevant texts and embeddings.
     """
     client      = create_client()
-    query_msg   = _build_query_message(
-        jobs,
-        query        =query,
-        model        =model,
-        token_budget =token_budget
-    )
-    if verbose:
-        print(f"QUERY MESSAGE:{query_msg}")
-    messages    = _build_gpt_message(query_msg)
-    response    = _gen_response(client, messages, model)
+    responses: list[Response] = []
+    for i in range(0, len(jobs), JOBS_PER_BATCH):
+        jobs_batch = jobs[i:i + JOBS_PER_BATCH]
+        query_msg   = _build_query_message(
+            jobs_batch,
+            query        =query,
+            model        =model,
+            token_budget =token_budget
+        )
+        if verbose:
+            print(f"QUERY MESSAGE:{query_msg}")
+        messages        = _build_gpt_message(query_msg)
+        response_str    = _gen_response(client, messages, model)
+        resp            = parse_response(response_str)
+        if resp:
+            responses.append(resp)
+    merged_responses = _merge_responses(responses)
     if save_local:
         _save_local_query_and_response(
             query           =query,
             query_messages  =messages,
-            response        =response,
+            response        =json.dumps(merged_responses),
             verbose         =verbose
         )
-    return response
+    return json.dumps(merged_responses)
 
 if __name__ == "__main__":
     import argparse
@@ -178,7 +199,7 @@ if __name__ == "__main__":
         help="Filtering query. If omitted, uses a default prompt for Summer 2026 internships."
     )
     parser.add_argument(
-        "--model", type=str, default=GPT_CHEAPEST, help="OpenAI model to use."
+        "--model", type=str, default=GPT_MODELS[2], help="OpenAI model to use."
     )
     parser.add_argument(
         "--token_budget", type=int, default=ASK_TOKEN_BUDGET, help="Token budget for GPT call."
