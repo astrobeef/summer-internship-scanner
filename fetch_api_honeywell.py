@@ -88,7 +88,7 @@ def _parse_jobs_from_hits(
             "title"         :h["Title"],
             "url"           :"https://careers.honeywell.com/en/sites/Honeywell/job/" + _parse_id(h),        # Not included, but always configured this way
             "location"      :h["PrimaryLocation"],
-            "contract_type" :"Intern",
+            "contract_type" :"",      # Not listed
             "unique_meta"   :{
                     "post_date"       :h["PostedDate"],
                     "workplace"         :h["WorkplaceType"]
