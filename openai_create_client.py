@@ -28,7 +28,8 @@ def num_tokens(
 # I/O RESPONSE #
 ################
 
-CACHE_QUERY_PATTERN = "./data/openai_response/{date}-response.json"
+CACHE_QUERY_DIR     = "./data/openai_response/"
+CACHE_QUERY_PATTERN = "{date}-response.json"
 
 def build_cache_query_path(date: datetime = None):
     """
@@ -37,7 +38,7 @@ def build_cache_query_path(date: datetime = None):
     if date is None:
         date = datetime.now()
     date_str = date.strftime("%Y-%m-%d")
-    return CACHE_QUERY_PATTERN.format(date=date_str)
+    return f"{CACHE_QUERY_DIR}{CACHE_QUERY_PATTERN}".format(date=date_str)
 
 ##########################
 # LOAD DAILY TOKEN USAGE #
