@@ -58,6 +58,18 @@ def save_jobs(
         verbose and print(f"Saved {len(jobs)} structured jobs for {j["source"]}")
     return
 
+def is_saved(
+        job :Job,
+        *,
+        dir :str
+) -> bool:
+    path = None
+    try:
+        path = _build_path(job["source"], job["id"], dir=dir, make_dir=False)
+    except Exception as e:
+        pass
+    return path and os.path.isfile(path)
+
 def load_objects(
         *,
         source      :str,
