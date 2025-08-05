@@ -9,15 +9,13 @@ from bs4 import BeautifulSoup
 from readability import Document
 from playwright.sync_api import sync_playwright
 # local
-from constants import (TIMEOUT, Job)
+from constants import (TIMEOUT, DETAILED_JOBS_SAVE_DIR, Job)
 from util_fetch_io import (save_jobs, load_all_jobs)
 from fetch_api_amd import SOURCE as AMD_SOURCE
 from fetch_api_insomniac import SOURCE as INSOMNIAC_SOURCE
 from fetch_html_zenimax import SOURCE as ZENIMAX_SOURCE
 from fetch_api_sony import SOURCE as SONY_SOURCE
 from fetch_api_microsoft import SOURCE as MICROSOFT_SOURCE
-
-DETAILED_JOBS_SAVE_DIR = "./data/jobs_detailed"
 
 _USER_AGENT = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:141.0) "
                "Gecko/20100101 Firefox/141.0")
