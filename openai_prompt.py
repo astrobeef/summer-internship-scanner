@@ -29,3 +29,42 @@ SYSTEM_PROMPT = (
     "Be lenient for jobs with minimal descriptions, but do not place jobs in 'close_match' unless they strongly fit. "
     "Respond only with a single, valid JSON object with the keys close_match, near_match, non_match, each containing a list of jobs (url, title, reason)."
 )
+
+RESPONSE_FORMAT = {
+    "type": "json_schema",
+    "json_schema": {
+        "name": "job_categorization",
+        "strict": True,
+        "schema": {
+            "type": "object",
+            "additionalProperties": False,
+            "properties": {
+                "close_match": {
+                    "type": "array",
+                    "items": {"$ref": "#/$defs/job"}
+                },
+                "near_match": {
+                    "type": "array",
+                    "items": {"$ref": "#/$defs/job"}
+                },
+                "non_match": {
+                    "type": "array",
+                    "items": {"$ref": "#/$defs/job"}
+                }
+            },
+            "required": ["close_match", "near_match", "non_match"],
+            "$defs": {
+                "job": {
+                    "type": "object",
+                    "properties": {
+                        "url": {"type": "string", "pattern": "^https?://"},
+                        "title": {"type": "string"},
+                        "reason": {"type": "string"}
+                    },
+                    "required": ["url", "title", "reason"],
+                    "additionalProperties": False
+                }
+            }
+        }
+    }
+}

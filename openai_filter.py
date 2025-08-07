@@ -108,7 +108,8 @@ def _gen_response(
     response            = client.chat.completions.create(
     model                   =model,
     messages                =messages,
-    temperature             =CHAT_TEMPERATURE
+    temperature             =CHAT_TEMPERATURE,
+    response_format         =RESPONSE_FORMAT
 )
     response_message    = response.choices[0].message.content
     save_add_daily_tokens_used(response.usage.total_tokens)
