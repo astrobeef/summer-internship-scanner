@@ -11,6 +11,7 @@ from fetch_api_microsoft import parse_jobs_fetch_hits as fetch_microsoft
 from fetch_api_sony import parse_jobs_fetch_hits as fetch_sony
 from fetch_api_workday import parse_jobs_fetch_hits as fetch_workday
 from fetch_html_ea import fetch_ea_jobs
+from fetch_html_notion import fetch_notion_jobs
 from fetch_html_riot import fetch_riot_jobs
 from fetch_html_zenimax import fetch_zenimax_jobs
 import fetch_obsidian
@@ -35,6 +36,7 @@ def fetch_all_jobs(
         fetch_sony,
         fetch_workday,
         fetch_ea_jobs,
+        fetch_notion_jobs,
         fetch_riot_jobs,
         fetch_zenimax_jobs,
     ]:
