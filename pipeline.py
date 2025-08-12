@@ -8,6 +8,7 @@ from dispatch_email import dispatch_email
 from constants import (DETAILED_JOBS_SAVE_DIR, Response, GPT_MODELS)
 from openai_create_client import CACHE_QUERY_DIR
 from util_fetch_io import (is_saved, load_all_jobs)
+from ignore_blacklist import ignore_blacklisted_jobs
 
 def _merge_responses(
         new_response    :Response   =None,
@@ -82,6 +83,7 @@ def fetch_all_jobs_and_dispatch(
         verbose     :bool = False
 ):
     all_jobs = fetch_all_jobs(verbose=verbose)
+    all_jobs = ignore_blacklisted_jobs(all_jobs, verbose=verbose)
     all_jobs = _get_all_job_descriptions(all_jobs, verbose=verbose)
     already_filtered_urls = _load_all_filtered_urls()
     jobs_unfiltered = [job for job in all_jobs if job["url"] not in already_filtered_urls]
