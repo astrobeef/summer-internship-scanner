@@ -72,6 +72,96 @@ workday_sites: list[WorkdaySite] = [
             },
             "job_url_prefix"    :"https://sonyglobal.wd1.myworkdayjobs.com/en-US/SonyGlobalCareers"
         },
+        {
+            "source"            :"salesforce",
+            "endpoint"          :"https://salesforce.wd12.myworkdayjobs.com/wday/cxs/salesforce/External_Career_Site/jobs",
+            "Referer"           :"https://salesforce.wd12.myworkdayjobs.com/External_Career_Site?workerSubType=3a910852b2c31010f48d2cefdccd0000&CF_-_REC_-_LRV_-_Job_Posting_Anchor_-_Country_from_Job_Posting_Location_Extended=bc33aa3152ec42d4995f4791a106ed09",
+            "appliedFacets"    :{
+                "CF_-_REC_-_LRV_-_Job_Posting_Anchor_-_Country_from_Job_Posting_Location_Extended":["bc33aa3152ec42d4995f4791a106ed09"],
+                "workerSubType"     :["3a910852b2c31010f48d2cefdccd0000"]
+            },
+            "job_url_prefix"    :"https://salesforce.wd12.myworkdayjobs.com/en-US/External_Career_Site"
+        },
+        {
+            "source"            :"salesforce",
+            "endpoint"          :"https://salesforce.wd12.myworkdayjobs.com/wday/cxs/salesforce/External_Career_Site/jobs",
+            "Referer"           :"https://salesforce.wd12.myworkdayjobs.com/External_Career_Site?workerSubType=3a910852b2c31010f48d2cefdccd0000&CF_-_REC_-_LRV_-_Job_Posting_Anchor_-_Country_from_Job_Posting_Location_Extended=bc33aa3152ec42d4995f4791a106ed09",
+            "appliedFacets"    :{
+                "CF_-_REC_-_LRV_-_Job_Posting_Anchor_-_Country_from_Job_Posting_Location_Extended":["bc33aa3152ec42d4995f4791a106ed09"],
+                "workerSubType"     :["3a910852b2c31010f48d2cefdccd0000"]
+            },
+            "job_url_prefix"    :"https://salesforce.wd12.myworkdayjobs.com/en-US/External_Career_Site"
+        },
+        {
+            "source"            :"adobe",
+            "endpoint"          :"https://adobe.wd5.myworkdayjobs.com/wday/cxs/adobe/external_experienced/jobs",
+            "Referer"           :"https://adobe.wd5.myworkdayjobs.com/external_experienced?workerSubType=3ba4ecdf4893100b2f8d08d56d8d6c8e&locationCountry=bc33aa3152ec42d4995f4791a106ed09",
+            "appliedFacets"    :{
+                "locationCountry":["bc33aa3152ec42d4995f4791a106ed09"],
+                "workerSubType"     :["3ba4ecdf4893100b2f8d08d56d8d6c8e"]
+            },
+            "job_url_prefix"    :"https://adobe.wd5.myworkdayjobs.com/en-US/external_experienced"
+        },
+        {
+            "source"            :"snap",
+            "endpoint"          :"https://wd1.myworkdaysite.com/wday/cxs/snapchat/snap/jobs",
+            "Referer"           :"https://wd1.myworkdaysite.com/en-US/recruiting/snapchat/snap?q=intern&jobFamily=8d73f0a7971d102b9db74b4c3651e667&jobFamily=8d73f0a7971d102b9d459841e16ae3a5",
+            "appliedFacets"    :{
+                "jobFamily	":["8d73f0a7971d102b9db74b4c3651e667",
+                              "8d73f0a7971d102b9d459841e16ae3a5"],
+            },
+            "searchText"        : "intern",
+            "job_url_prefix"    :"https://wd1.myworkdaysite.com/en-US/recruiting/snapchat/snap"
+        },
+        {
+            "source"            :"cadence",
+            "endpoint"          :"https://cadence.wd1.myworkdayjobs.com/wday/cxs/cadence/External_Careers/jobs",
+            "Referer"           :"https://cadence.wd1.myworkdayjobs.com/en-US/External_Careers/jobs?workerSubType=631f97c41c2749729ac5abe683f281d0&Location_Country=bc33aa3152ec42d4995f4791a106ed09",
+            "appliedFacets"    :{
+                "Location_Country":["bc33aa3152ec42d4995f4791a106ed09"],
+                "workerSubType":["631f97c41c2749729ac5abe683f281d0"]
+            },
+            "job_url_prefix"    :"https://cadence.wd1.myworkdayjobs.com/en-US/External_Careers"
+        },
+        {
+            "source"            :"analogdevices",
+            "endpoint"          :"https://analogdevices.wd1.myworkdayjobs.com/wday/cxs/analogdevices/External/jobs",
+            "Referer"           :"https://analogdevices.wd1.myworkdayjobs.com/External",
+            "appliedFacets"    :{
+                "locationCountry":["bc33aa3152ec42d4995f4791a106ed09"],
+                "workerSubType":["633b03df4f5d1000ec10ab4627a80000"]
+            },
+            "job_url_prefix"    :"https://analogdevices.wd1.myworkdayjobs.com/en-US/External"
+        },
+        {
+            "source"            :"nxp",
+            "endpoint"          :"https://nxp.wd3.myworkdayjobs.com/wday/cxs/nxp/careers/jobs",
+            "Referer"           :"https://nxp.wd3.myworkdayjobs.com/careers?workerSubType=98d67abaaa8a100fa367c93a27fc8ec5&Location_Country=bc33aa3152ec42d4995f4791a106ed09",
+            "appliedFacets"    :{
+                "Location_Country":["bc33aa3152ec42d4995f4791a106ed09"],
+                "workerSubType":["98d67abaaa8a100fa367c93a27fc8ec5"]
+            },
+            "job_url_prefix"    :"https://nxp.wd3.myworkdayjobs.com/en-US/careers"
+        },
+        {
+            "source"            :"microchip",
+            "endpoint"          :"https://wd5.myworkdaysite.com/wday/cxs/microchiphr/External/jobs",
+            "Referer"           :"https://wd5.myworkdaysite.com/en-US/recruiting/microchiphr/External?zz_LRV_Career_Level_Requisition_Extended=57f4a35d19da0166ec5d6a6365019c99&locationCountry=bc33aa3152ec42d4995f4791a106ed09",
+            "appliedFacets"    :{
+                "locationCountry":["bc33aa3152ec42d4995f4791a106ed09"],
+                "zz_LRV_Career_Level_Requisition_Extended":["57f4a35d19da0166ec5d6a6365019c99"]
+            },
+            "job_url_prefix"    :"https://wd5.myworkdaysite.com/en-US/recruiting/microchiphr/External"
+        },
+        {
+            "source"            :"northrop",
+            "endpoint"          :"https://ngc.wd1.myworkdayjobs.com/wday/cxs/ngc/Northrop_Grumman_External_Site/jobs",
+            "Referer"           :"https://ngc.wd1.myworkdayjobs.com/Northrop_Grumman_External_Site?workerSubType=a111b0a898f10129e4db58f2e700d97a",
+            "appliedFacets"    :{
+                "workerSubType":["a111b0a898f10129e4db58f2e700d97a"]
+            },
+            "job_url_prefix"    :"https://ngc.wd1.myworkdayjobs.com/en-US/Northrop_Grumman_External_Site"
+        },
     ]
 
 # Derived from HAR
