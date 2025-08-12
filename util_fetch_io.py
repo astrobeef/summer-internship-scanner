@@ -89,7 +89,9 @@ def load_objects(
     return elements
 
 def load_all_jobs(
-        dir     :str
+        dir             :str,
+        *,
+        blacklist_urls  :list[str] = []
 ) -> list[Job]:
     """Load all job dictionaries from JSON files in the specified directory."""
     jobs = []
@@ -101,9 +103,10 @@ def load_all_jobs(
             with open(fpath, "r", encoding="utf-8") as f:
                 data = json.load(f)
                 if isinstance(data, dict):
-                    jobs.append(data)
+                    if data["url"] not in blacklist_urls:
+                        jobs.append(data)
                 else:
-                    jobs.extend(data)
+                    jobs.extend([job for job in data if job["url"] not in blacklist_urls])
         except Exception as e:
             print(f"[FAIL] Loading {fpath}: {e}", file=sys.stderr)
     return jobs

@@ -7,13 +7,14 @@ from openai_parse_response import (parse_response)
 from dispatch_email import dispatch_email
 from constants import (DETAILED_JOBS_SAVE_DIR, Response, GPT_MODELS)
 from openai_create_client import CACHE_QUERY_DIR
-from util_fetch_io import (is_saved, load_all_jobs)
-from ignore_blacklist import ignore_blacklisted_jobs
+from util_fetch_io import (JOBS_SAVE_DIR, is_saved, load_all_jobs)
+from ignore_blacklist import extract_blacklist_urls
 
 def _merge_responses(
         new_response    :Response   =None,
         *,
-        dir             :str        =CACHE_QUERY_DIR
+        dir             :str        =CACHE_QUERY_DIR,
+        blacklist_urls  :list[str]  =[]
 ):
     responses = [new_response] if new_response else []
     if not os.path.isdir(dir):
@@ -43,13 +44,14 @@ def _merge_responses(
         for key in merged:
             for entry in r.get(key, []):
                 url = entry.get("url")
-                if url and url not in seen[key]:
+                if url and url not in seen[key] and url not in blacklist_urls:
                     merged[key].append(entry)
                     seen[key].add(url)
     return merged
 
 def _load_all_filtered_urls(
-        responses_dir   :str =CACHE_QUERY_DIR
+        responses_dir   :str        =CACHE_QUERY_DIR,
+        blacklist_urls  :list[str]  =[]
 ):
     urls = set()
     if not os.path.isdir(responses_dir):
@@ -65,14 +67,18 @@ def _load_all_filtered_urls(
                 for key in ("close_match", "near_match", "non_match"):
                     for eval in response[key]:
                         url = eval["url"]
-                        if url and not url in urls:
+                        if (url) and (not url in urls) and (url not in blacklist_urls):
                             urls.add(url)
         except Exception as e:
             print(f"Warning: Could not parse {fname}: {e}")
     return urls
 
-def _get_all_job_descriptions(jobs, verbose:bool):
-    jobs_with_desc      = load_all_jobs(dir = DETAILED_JOBS_SAVE_DIR)
+def _get_all_job_descriptions(
+        jobs                  ,
+        blacklist_urls  :list[str],
+        verbose         :bool
+        ):
+    jobs_with_desc      = load_all_jobs(dir = DETAILED_JOBS_SAVE_DIR, blacklist_urls=blacklist_urls)
     jobs_missing_desc   = [job for job in jobs if not is_saved(job, dir=DETAILED_JOBS_SAVE_DIR)]
     new_jobs_described  = augment_jobs_with_descriptions(jobs_missing_desc, verbose=verbose)
     return new_jobs_described + jobs_with_desc
@@ -82,15 +88,15 @@ def fetch_all_jobs_and_dispatch(
         model       :str = GPT_MODELS[1],
         verbose     :bool = False
 ):
-    all_jobs = fetch_all_jobs(verbose=verbose)
-    all_jobs = ignore_blacklisted_jobs(all_jobs, verbose=verbose)
-    all_jobs = _get_all_job_descriptions(all_jobs, verbose=verbose)
-    already_filtered_urls = _load_all_filtered_urls()
+    blacklist_urls = extract_blacklist_urls()
+    all_jobs = load_all_jobs(JOBS_SAVE_DIR, blacklist_urls=blacklist_urls)
+    all_jobs = _get_all_job_descriptions(all_jobs, blacklist_urls=blacklist_urls, verbose=verbose)
+    already_filtered_urls = _load_all_filtered_urls(blacklist_urls=blacklist_urls)
     jobs_unfiltered = [job for job in all_jobs if job["url"] not in already_filtered_urls]
     if jobs_unfiltered and len(jobs_unfiltered) > 0:
         response_str = filter_jobs(jobs_unfiltered, model=model, verbose=verbose)
         response: Response = parse_response(response_str)
-        merged_responses = _merge_responses(response)
+        merged_responses = _merge_responses(response, blacklist_urls=blacklist_urls)
     else:
-        merged_responses = _merge_responses()
+        merged_responses = _merge_responses(blacklist_urls=blacklist_urls)
     dispatch_email(merged_responses)
