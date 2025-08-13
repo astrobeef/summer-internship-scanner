@@ -89,7 +89,7 @@ def fetch_all_jobs_and_dispatch(
         verbose     :bool = False
 ):
     blacklist_urls = extract_blacklist_urls()
-    all_jobs = load_all_jobs(JOBS_SAVE_DIR, blacklist_urls=blacklist_urls)
+    all_jobs = fetch_all_jobs(verbose=verbose)
     all_jobs = _get_all_job_descriptions(all_jobs, blacklist_urls=blacklist_urls, verbose=verbose)
     already_filtered_urls = _load_all_filtered_urls(blacklist_urls=blacklist_urls)
     jobs_unfiltered = [job for job in all_jobs if job["url"] not in already_filtered_urls]
