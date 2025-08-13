@@ -67,7 +67,7 @@ def _notify_matches(response: Response):
     print("Notification sent.")
 
 def _has_matches(response: Response):
-    return len(response["close_match"]) > 0 or len(response["near_match"] > 0)
+    return len(response["close_match"]) > 0 or len(response["near_match"]) > 0
 
 def dispatch_email(response: Response = None):
     if not response:
