@@ -3,6 +3,7 @@ Databricks internships come from a JSON GET endpoint.
 """
 # first-party
 from __future__ import annotations
+import json
 import requests
 # local
 from constants import (
@@ -21,19 +22,21 @@ from util_fetch_io import (
 
 SOURCE = "databricks"
 
-# Derived from databricks.har
-ENDPOINT = (
-    "https://www.databricks.com/company/careers/open-positions?department=University%20Recruiting&location=all"
-)
+INTERNSHIP_DEPARTMENT   = "University Recruiting"
+DEPARTMENT_METADATA_KEY = "Career Page Posting Category"
 
-# Derived from databricks.har
+# Greenhouse API constants
+BASE_GREENHOUSE_API: str = "https://boards-api.greenhouse.io/v1/boards"
+GREENHOUSE_BOARD_TOKEN: str = "databricks"  # public token used by the embed
+ENDPOINT: str = f"{BASE_GREENHOUSE_API}/{GREENHOUSE_BOARD_TOKEN}/jobs"
+
 HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:141.0) "
         "Gecko/20100101 Firefox/141.0"
     ),
-    "Accept": "application/json, text/plain, */*",
-    "Referer": "https://www.databricks.com/"
+    "Accept": "application/json",
+    "Referer": "https://boards.greenhouse.io/"
 }
 
 #######
@@ -41,13 +44,26 @@ HEADERS = {
 #######
 
 def _parse_id(hit) -> str:
-    return hit["id"]
+    return str(hit["id"])
 
 ############
 #  FETCH   #
 ############
 
-# NOTE: All the keys referenced were derived from the .har file
+def _is_internship(hit):
+    for m in hit["metadata"]:
+        if m["name"].strip().lower() == DEPARTMENT_METADATA_KEY.lower():
+            values = m["value"]
+            if isinstance(values, str):
+                values = [values]
+            if isinstance(values, list):
+                return any(
+                    isinstance(v, str) and v.strip().lower() == INTERNSHIP_DEPARTMENT.lower()
+                    for v in values
+                )
+            return False
+    return False
+
 def _fetch_hits(
     timeout_seconds :int,
     *,
@@ -67,53 +83,82 @@ def _fetch_hits(
         raise RuntimeError(
             f"Databricks request failed: {response.status_code} {response.text}"
         ) from exc
-    data  = response.json()
-    hits  = data.get("hits", [])
-    total = data.get("total", 0)
-    verbose and print(f"Fetched {len(hits)} / total={total} hits from Databricks")
+
+    data = response.json()
+
+    # Greenhouse schema: {"jobs": [ ... ]}
+    hits = data["jobs"]
+    # Filter for internships
+    hits = [h for h in hits if _is_internship(h)]
+    verbose and print(f"Fetched {len(hits)} jobs from Greenhouse (Databricks board)")
     if save_local and hits:
         save_hits(hits, source=SOURCE, id_fn=_parse_id, verbose=verbose)
     return hits
 
+LOCATION_COMMA_SEP: str        = ","
+LOCATION_HYPHEN_SEP: str       = "-"
+TOKEN_MULTIPLE_LOCATIONS: str  = "multiple locations"
+TOKEN_BLANK: str               = "blank"
+TOKEN_REMOTE: str              = "remote"
+
 def _format_location(loc_name: str | None) -> str:
     if not loc_name:
         return ""
-    parts = [p.strip() for p in loc_name.split(",")]
-    # Remove any parts that are just 'BLANK' (case-insensitive)
-    parts = [p for p in parts if p.lower() != "blank"]
-    if parts and parts[-1].lower() == "multiple locations":
+    raw = loc_name.strip()
+    if not raw:
+        return ""
+    if raw.strip().lower() == TOKEN_MULTIPLE_LOCATIONS:
         return "Multiple Locations"
+    parts = [p.strip() for p in raw.split(LOCATION_COMMA_SEP)]
+    parts = [p for p in parts if p.lower() != TOKEN_BLANK]
     if len(parts) >= 2:
-        # First is city, last is country
-        return f"{parts[0]}, {parts[-1]}"
-    raise ValueError(f"Unhandled location name \"{loc_name}\"")
+        city = parts[0]
+        country = parts[-1]
+        return f"{city}{LOCATION_COMMA_SEP} {country}"
+    single = parts[0] if parts else raw
+    if LOCATION_HYPHEN_SEP in single:
+        lhs, rhs = (s.strip() for s in single.split(LOCATION_HYPHEN_SEP, 1))
+        if lhs.lower() == TOKEN_REMOTE and rhs:
+            return f"{lhs} {LOCATION_HYPHEN_SEP} {rhs}"
+    return single
 
 # NOTE: All the keys referenced were derived from the .har file
 def _parse_jobs_from_hits(
-    hits        :list,
+    hits: list,
     *,
-    save_local  :bool,
-    verbose     :bool
+    save_local: bool,
+    verbose: bool
 ) -> list[Job]:
     jobs: list[Job] = []
+
     for h in hits:
-        location_str = h.get("location", {}).get("name", "")
+        dept = INTERNSHIP_DEPARTMENT    # Because of filtering in `_fetch_hits(..)`, department will always be internship
+        loc_name = h["location"]["name"]
+        company  = h["company_name"]
         job: Job = {
-            "source"        :SOURCE,
-            "id"            :_parse_id(h),
-            "title"         :h["title"],
-            "url"           :f"https://boards-api.greenhouse.io/v1/boards/databricks/jobs/{_parse_id(h)}",       # This is used for greenhouse posts (absolute URL gives 403)
-            "location"      :_format_location(location_str),
-            "contract_type" :h["type"],
-            "unique_meta"   :{
-                    "department":       h.get("department", ""),
-                    "company":          h.get("company_name", ""),
-                    "remote":           h.get("remote", False),
-                    "updated_epoch":    h.get("updated_at"),
-                    "absolute_url":     h["absolute_url"],
-                }
+            "source"        : SOURCE,
+            "id"            : _parse_id(h),
+            "title"         : h["title"],
+            "url"           : h["absolute_url"],
+            "location"      : _format_location(loc_name),
+            "contract_type" : "",
+            "unique_meta"   : {
+                "department"     : dept,
+                "company"        : company,
+                "requisition_id" : h["requisition_id"],
+                "first_published": h["first_published"],
+                "updated_at"     : h["updated_at"],
+                "education"      : h.get("education", ""),
+                "company_entity" : next(
+                    (m["value"] for m in h["metadata"]
+                    if m["name"].strip().lower() == "company assignment"),
+                    ""
+                ),
+            },
         }
         jobs.append(job)
+
+
     if save_local:
         save_jobs(jobs, verbose=verbose)
     return jobs
