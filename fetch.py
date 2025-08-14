@@ -10,6 +10,8 @@ from fetch_api_insomniac import parse_jobs_fetch_hits as fetch_insomniac
 from fetch_api_microsoft import parse_jobs_fetch_hits as fetch_microsoft
 from fetch_api_sony import parse_jobs_fetch_hits as fetch_sony
 from fetch_api_workday import parse_jobs_fetch_hits as fetch_workday
+from fetch_greenhouse import parse_jobs_fetch_hits as fetch_greenhouse
+from fetch_html_mathworks import _parse_jobs_from_html as fetch_mathworks
 from fetch_html_ea import fetch_ea_jobs
 from fetch_html_notion import fetch_notion_jobs
 from fetch_html_riot import fetch_riot_jobs
@@ -35,6 +37,8 @@ def fetch_all_jobs(
         fetch_microsoft,
         fetch_sony,
         fetch_workday,
+        fetch_greenhouse,
+        fetch_mathworks,
         fetch_ea_jobs,
         fetch_notion_jobs,
         fetch_riot_jobs,
