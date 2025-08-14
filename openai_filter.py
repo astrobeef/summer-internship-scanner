@@ -24,8 +24,8 @@ from append_full_descriptions import DETAILED_JOBS_SAVE_DIR
 from openai_prompt import *
 from openai_parse_response import parse_response
 
-DESC_MAX_LENGTH     = 1000#characters
-JOBS_PER_BATCH      = 30#jobs
+DESC_MAX_LENGTH     = 2000#characters
+JOBS_PER_BATCH      = 10#jobs
 
 def _build_gpt_message(query_msg: str) -> list[dict[str,str]]:
     return [
