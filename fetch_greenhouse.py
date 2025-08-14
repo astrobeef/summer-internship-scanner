@@ -42,6 +42,12 @@ GREENHOUSE_SOURCES: list[dict[str, Any]] = [
         "internship_department": "University",
         "department_metadata_key": "Careers Page Department",
     },
+    {
+        "source": "verse",
+        "board_token": "verse",
+        "internship_department": "",
+        "department_metadata_key": "",
+    },
 ]
 
 HEADERS = {
@@ -104,6 +110,8 @@ def _is_internship(hit: dict[str, Any], *, dept_key: str, dept_value: str) -> bo
     Determines if a job is an internship by comparing the configured department metadata.
     Uses tolerant matching (string equality after strip+lower) and supports list-or-string values.
     """
+    if dept_key == "" and dept_value == "":
+        return True
     meta_value = _metadata_lookup(hit, dept_key)
     for v in _value_as_list(meta_value):
         if isinstance(v, str) and v.strip().lower() == dept_value.strip().lower():
