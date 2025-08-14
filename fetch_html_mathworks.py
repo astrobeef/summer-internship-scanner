@@ -13,7 +13,7 @@ from constants import (
     TIMEOUT,
     Job,
 )
-from util_fetch_io import save_jobs
+from util_fetch_io import (JOBS_SAVE_DIR, save_jobs, load_objects)
 
 SOURCE = "mathworks"
 
@@ -134,7 +134,8 @@ def fetch_mathworks_jobs(
         resp = requests.get(MATHWORKS_SEARCH_URL, headers=HEADERS, timeout=timeout_seconds)
         resp.raise_for_status()
     except requests.exceptions.Timeout:
-        raise RuntimeError("MathWorks request timed out")
+        print(f"[Mathworks - BYPASS TIMEOUT] MathWorks request timed out. Since this is a common occurance, avoiding raise error and returning previous saved jobs")
+        return load_objects(source=SOURCE, dir=JOBS_SAVE_DIR, verbose=verbose)
     except requests.HTTPError as exc:
         raise RuntimeError(
             f"MathWorks request failed: {getattr(resp, 'status_code', '?')} {getattr(resp, 'text', '')[:200]}"

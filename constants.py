@@ -1,7 +1,7 @@
 import re
 from typing import TypedDict
 
-TIMEOUT = 10#seconds
+TIMEOUT = 20#seconds
 HITS_SAVE_DIR = "./data/hits"
 JOBS_SAVE_DIR = "./data/jobs"
 DETAILED_JOBS_SAVE_DIR = "./data/jobs_detailed"
