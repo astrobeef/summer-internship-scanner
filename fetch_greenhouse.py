@@ -36,12 +36,12 @@ GREENHOUSE_SOURCES: list[dict[str, Any]] = [
         "internship_department": "University Recruiting",
         "department_metadata_key": "Career Page Posting Category",
     },
-    {
-        "source": "pinterest",
-        "board_token": "pinterest",
-        "internship_department": "University",
-        "department_metadata_key": "Careers Page Department",
-    },
+    # {     # Pinterest giving 403 error
+    #     "source": "pinterest",
+    #     "board_token": "pinterest",
+    #     "internship_department": "University",
+    #     "department_metadata_key": "Careers Page Department",
+    # },
     {
         "source": "verse",
         "board_token": "verse",
