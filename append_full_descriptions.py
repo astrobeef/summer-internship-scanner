@@ -99,6 +99,8 @@ def augment_jobs_with_descriptions(
     verbose     :bool   = False,
 ):
     for job in jobs:
+        if job.get("description") and len(job["description"]) > 0:
+            continue
         if job["source"] == AMD_SOURCE:
             job["description"] = "Inaccessible"
             continue
