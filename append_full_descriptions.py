@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 from readability import Document
 from playwright.sync_api import sync_playwright
 # local
-from constants import (TIMEOUT, DETAILED_JOBS_SAVE_DIR, Job)
+from constants import (TIMEOUT, DETAILED_JOBS_SAVE_DIR, Job, DESC_NOT_IMPLEMENTED)
 from util_fetch_io import (save_jobs, load_all_jobs)
 from fetch_api_amd import SOURCE as AMD_SOURCE
 from fetch_api_insomniac import SOURCE as INSOMNIAC_SOURCE
@@ -81,8 +81,13 @@ def _get_html(
             rsp = session.get(job["url"], timeout=timeout, verify=False)       # Honeywell gives verification error, but the site is reliable
         else:
             rsp = session.get(job["url"], timeout=timeout)
-        rsp.raise_for_status()
-        html = rsp.text
+        try:
+            rsp.raise_for_status()
+            html = rsp.text
+        except Exception as e:
+            print(f"[FAIL] Playwright fetch for {job["source"]}: {e}", file=sys.stderr)
+            job["description"] = "Unable to fetch via Playwright"
+            return None
     try:
         text_json = json.loads(html)
         html = text_json["content"]
@@ -91,7 +96,7 @@ def _get_html(
     return html
 
 def augment_jobs_with_descriptions(
-    jobs        :list[dict],
+    jobs        :list[Job],
     *,
     save_local  :bool   = True,
     timeout     :int    = TIMEOUT,
@@ -99,7 +104,7 @@ def augment_jobs_with_descriptions(
     verbose     :bool   = False,
 ):
     for job in jobs:
-        if job.get("description") and len(job["description"]) > 0:
+        if job.get("description") is not None and job["description"] is not DESC_NOT_IMPLEMENTED:
             continue
         if job["source"] == AMD_SOURCE:
             job["description"] = "Inaccessible"

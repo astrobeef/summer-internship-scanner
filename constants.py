@@ -5,6 +5,7 @@ TIMEOUT = 20#seconds
 HITS_SAVE_DIR = "./data/hits"
 JOBS_SAVE_DIR = "./data/jobs"
 DETAILED_JOBS_SAVE_DIR = "./data/jobs_detailed"
+DESC_NOT_IMPLEMENTED = "Not Implemented"
 
 class Job(TypedDict):
     source          :str
@@ -14,7 +15,7 @@ class Job(TypedDict):
     location        :str
     contract_type   :str
     unique_meta     :dict
-    description     :str = "Not Implemented"
+    description     :str = DESC_NOT_IMPLEMENTED
 
 class WorkdaySite(TypedDict):
     source          :str
