@@ -11,6 +11,7 @@ from fetch_api_microsoft import parse_jobs_fetch_hits as fetch_microsoft
 from fetch_api_sony import parse_jobs_fetch_hits as fetch_sony
 from fetch_api_workday import parse_jobs_fetch_hits as fetch_workday
 from fetch_greenhouse import parse_jobs_fetch_hits as fetch_greenhouse
+from fetch_linkedin import parse_jobs_fetch_hits as fetch_linkedin
 from fetch_html_mathworks import fetch_mathworks_jobs
 from fetch_html_ea import fetch_ea_jobs
 from fetch_html_notion import fetch_notion_jobs
@@ -28,11 +29,11 @@ def fetch_all_jobs(
     all_jobs: list[Job] = []
     for fetcher in [
         fetch_amazon,
-        fetch_amd,
+        # fetch_amd,
         fetch_epic,
         fetch_hitmarker,
         fetch_honeywell,
-        fetch_ibm,
+        # fetch_ibm,
         fetch_insomniac,
         fetch_microsoft,
         fetch_sony,
@@ -43,6 +44,7 @@ def fetch_all_jobs(
         fetch_notion_jobs,
         fetch_riot_jobs,
         fetch_zenimax_jobs,
+        fetch_linkedin,
     ]:
         jobs = fetcher(timeout_seconds=timeout, save_local=save_local, verbose=verbose)
         all_jobs.extend(jobs)
