@@ -18,7 +18,8 @@ from openai_create_client import (
     create_client,
     save_add_daily_tokens_used,
     is_daily_token_limit_reached,
-    build_cache_query_path
+    build_cache_query_path,
+    BASIC_MODELS
     )
 from append_full_descriptions import DETAILED_JOBS_SAVE_DIR
 from openai_prompt import *
@@ -100,11 +101,14 @@ def _gen_response(
         model   :str
 ) -> str:
     if is_daily_token_limit_reached(model=model):
-        if not is_daily_token_limit_reached(model=GPT_CHEAPEST):
-            print(f"WARNING: Daily token limit reached for parameter model \"{model}\". Switching to cheapest model: \"{GPT_CHEAPEST}\"")
-            model = GPT_CHEAPEST
+        if not is_daily_token_limit_reached(model=BASIC_MODELS[2]):
+            print(f"WARNING! STOPPED GENERATION: Cannot generate response because the daily limit for model \"{model}\" has been reached. If this is an advanced model, basic models may still be available.")
+            return False
+            print(f"WARNING: Daily token limit reached for parameter model \"{model}\". Switching to cheaper model: \"{BASIC_MODELS[2]}\"")
+            model = BASIC_MODELS[2]
         else:
-            raise ValueError(f"Cannot generate response because the daily limit for model \"{model}\" has been reached. If this is an advanced model, basic models may still be available.")
+            print(f"WARNING! STOPPED GENERATION: Cannot generate response because the daily limit for model \"{model}\" has been reached. If this is an advanced model, basic models may still be available.")
+            return False
     response            = client.chat.completions.create(
     model                   =model,
     messages                =messages,
@@ -179,9 +183,12 @@ def filter_jobs(
             print(f"QUERY MESSAGE:{query_msg}")
         messages        = _build_gpt_message(query_msg)
         response_str    = _gen_response(client, messages, model)
-        resp            = parse_response(response_str)
-        if resp:
-            responses.append(resp)
+        if response_str:
+            resp            = parse_response(response_str)
+            if resp:
+                responses.append(resp)
+        else:
+            break   # Can no longer generate responses, so break
     merged_responses = _merge_responses(responses)
     if save_local:
         _save_local_query_and_response(
