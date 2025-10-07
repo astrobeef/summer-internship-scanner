@@ -90,6 +90,7 @@ def fetch_all_jobs_and_dispatch(
 ):
     blacklist_urls = extract_blacklist_urls()
     all_jobs = fetch_all_jobs(verbose=verbose)
+    # all_jobs = load_all_jobs(JOBS_SAVE_DIR, blacklist_urls=blacklist_urls)        # Uncomment to load locally rather than fetching new jobs
     all_jobs = _get_all_job_descriptions(all_jobs, blacklist_urls=blacklist_urls, verbose=verbose)
     already_filtered_urls = _load_all_filtered_urls(blacklist_urls=blacklist_urls)
     jobs_unfiltered = [job for job in all_jobs if job["url"] not in already_filtered_urls]
@@ -100,3 +101,6 @@ def fetch_all_jobs_and_dispatch(
     else:
         merged_responses = _merge_responses(blacklist_urls=blacklist_urls)
     dispatch_email(merged_responses)
+
+if __name__ == "__main__":
+    fetch_all_jobs_and_dispatch(verbose=True)
