@@ -51,17 +51,17 @@ workday_sites: list[WorkdaySite] = [
             },
             "job_url_prefix"    :"https://intel.wd1.myworkdayjobs.com/en-US/External"
         },
-        {
-            "source"            :"nvidia",
-            "endpoint"          :"https://nvidia.wd5.myworkdayjobs.com/wday/cxs/nvidia/NVIDIAExternalCareerSite/jobs",
-            "Referer"           :"https://nvidia.wd5.myworkdayjobs.com/External",
-            "appliedFacets"    :{
-                "locationHierarchy1":["2fcb99c455831013ea529c3b93ba3236",
-                              "2fcb99c455831013ea52fb338f2932d8"],
-                "workerSubType"     :["0c40f6bd1d8f10adf6dae42e46d44a17"]
-            },
-            "job_url_prefix"    :"https://nvidia.wd5.myworkdayjobs.com/en-US/NVIDIAExternalCareerSite"
-        },
+        # {
+        #     "source"            :"nvidia",
+        #     "endpoint"          :"https://nvidia.wd5.myworkdayjobs.com/wday/cxs/nvidia/NVIDIAExternalCareerSite/jobs",
+        #     "Referer"           :"https://nvidia.wd5.myworkdayjobs.com/External",
+        #     "appliedFacets"    :{
+        #         "locationHierarchy1":["2fcb99c455831013ea529c3b93ba3236",
+        #                       "2fcb99c455831013ea52fb338f2932d8"],
+        #         "workerSubType"     :["0c40f6bd1d8f10adf6dae42e46d44a17"]
+        #     },
+        #     "job_url_prefix"    :"https://nvidia.wd5.myworkdayjobs.com/en-US/NVIDIAExternalCareerSite"
+        # },
         {
             "source"            :"sonyglobal",
             "endpoint"          :"https://sonyglobal.wd1.myworkdayjobs.com/wday/cxs/sonyglobal/SonyGlobalCareers/jobs",
@@ -71,16 +71,6 @@ workday_sites: list[WorkdaySite] = [
                 "workerSubType"     :["7306bd11847f108d51604b3183153b95"]
             },
             "job_url_prefix"    :"https://sonyglobal.wd1.myworkdayjobs.com/en-US/SonyGlobalCareers"
-        },
-        {
-            "source"            :"salesforce",
-            "endpoint"          :"https://salesforce.wd12.myworkdayjobs.com/wday/cxs/salesforce/External_Career_Site/jobs",
-            "Referer"           :"https://salesforce.wd12.myworkdayjobs.com/External_Career_Site?workerSubType=3a910852b2c31010f48d2cefdccd0000&CF_-_REC_-_LRV_-_Job_Posting_Anchor_-_Country_from_Job_Posting_Location_Extended=bc33aa3152ec42d4995f4791a106ed09",
-            "appliedFacets"    :{
-                "CF_-_REC_-_LRV_-_Job_Posting_Anchor_-_Country_from_Job_Posting_Location_Extended":["bc33aa3152ec42d4995f4791a106ed09"],
-                "workerSubType"     :["3a910852b2c31010f48d2cefdccd0000"]
-            },
-            "job_url_prefix"    :"https://salesforce.wd12.myworkdayjobs.com/en-US/External_Career_Site"
         },
         {
             "source"            :"salesforce",
@@ -153,15 +143,15 @@ workday_sites: list[WorkdaySite] = [
             },
             "job_url_prefix"    :"https://wd5.myworkdaysite.com/en-US/recruiting/microchiphr/External"
         },
-        {
-            "source"            :"northrop",
-            "endpoint"          :"https://ngc.wd1.myworkdayjobs.com/wday/cxs/ngc/Northrop_Grumman_External_Site/jobs",
-            "Referer"           :"https://ngc.wd1.myworkdayjobs.com/Northrop_Grumman_External_Site?workerSubType=a111b0a898f10129e4db58f2e700d97a",
-            "appliedFacets"    :{
-                "workerSubType":["a111b0a898f10129e4db58f2e700d97a"]
-            },
-            "job_url_prefix"    :"https://ngc.wd1.myworkdayjobs.com/en-US/Northrop_Grumman_External_Site"
-        },
+        # {
+        #     "source"            :"northrop",
+        #     "endpoint"          :"https://ngc.wd1.myworkdayjobs.com/wday/cxs/ngc/Northrop_Grumman_External_Site/jobs",
+        #     "Referer"           :"https://ngc.wd1.myworkdayjobs.com/Northrop_Grumman_External_Site?workerSubType=a111b0a898f10129e4db58f2e700d97a",
+        #     "appliedFacets"    :{
+        #         "workerSubType":["a111b0a898f10129e4db58f2e700d97a"]
+        #     },
+        #     "job_url_prefix"    :"https://ngc.wd1.myworkdayjobs.com/en-US/Northrop_Grumman_External_Site"
+        # },
     ]
 
 # Derived from HAR
