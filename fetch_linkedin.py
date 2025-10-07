@@ -26,6 +26,7 @@ URL = "https://www.linkedin.com/jobs/search/?currentJobId=4295730239&distance=25
 
 SOURCE = "linkedin"
 SLOW_MO = 250#ms
+DELAY   = 250#ms
 
 def _parse_id(hit) -> str:
     return hit["id"]
@@ -57,9 +58,9 @@ def _fetch_hits(
         if button.count() > 0:
             button.wait_for(state="visible")
             button.click()
-            page.wait_for_timeout(500)
+            page.wait_for_timeout(DELAY)
             # Wait
-            page.wait_for_timeout(500)
+            page.wait_for_timeout(DELAY)
             # Load cred
             cred = {}
             with open(CRED_JSON, "r", encoding="utf-8") as f:
@@ -86,20 +87,19 @@ def _fetch_hits(
                 break
             ## Get all jobs in the list
             job_items_li = job_items_parent_ul.locator('li[class*="scaffold-layout__list-item"]')
-            print(f"DEBUG: total items: {job_items_li.count()}")
             ## Iterate over the jobs to select and grab data
             for n in range(job_items_li.count()):
                 ## Get iterate list item
                 data_job = {}
                 job_parent_item = job_items_li.nth(n)
                 # job_parent_item.highlight()
-                page.wait_for_timeout(500)
+                page.wait_for_timeout(DELAY)
                 try:
                     ## Try to click the div which (when clicked) will show more details on the right
                     job_item_clickable_div = job_parent_item.locator('div').first.locator('div').first
                     # job_item_clickable_div.highlight()
-                    page.wait_for_timeout(500)
-                    job_item_clickable_div.click(timeout=500)
+                    page.wait_for_timeout(DELAY)
+                    job_item_clickable_div.click(timeout=timeout_seconds)
 
 
 
@@ -115,7 +115,7 @@ def _fetch_hits(
                     # job_details_wrapper.highlight()
 
                     # Job title and link to post
-                    page.wait_for_timeout(500)
+                    page.wait_for_timeout(DELAY)
                     job_title = job_details_wrapper.locator('h1').first
                     # job_title.highlight()
                     data_job["title"] = job_title.inner_text()
@@ -124,7 +124,7 @@ def _fetch_hits(
                     data_job["id"]   = extract_job_id(job_link.get_attribute('href'))
 
                     # Job header details just below title
-                    page.wait_for_timeout(500)
+                    page.wait_for_timeout(DELAY)
                     job_header_details = job_details_wrapper.locator('div[class*="job-details-jobs-unified-top-card__primary-description-container"]').first
                     # job_header_details.highlight()
                     job_header_details_spans = job_header_details.locator('span')
@@ -141,7 +141,7 @@ def _fetch_hits(
                     data_job["details"] = data_job_details
 
                     # Job preferences (such as on-site or intern)
-                    page.wait_for_timeout(500)
+                    page.wait_for_timeout(DELAY)
                     job_pref_div = job_details_wrapper.locator('div[class*="job-details-fit-level-preferences"]').first
                     # job_pref_div.highlight()
                     job_pref_spans = job_pref_div.locator('span')
@@ -158,7 +158,7 @@ def _fetch_hits(
                     data_job["preferences"] = data_job_prefs
 
                     # Hirers (if any)
-                    page.wait_for_timeout(500)
+                    page.wait_for_timeout(DELAY)
                     job_hirer_cards = job_details_wrapper.locator('div[class*="hirer-card__hirer-information"]')
                     data_job_hirers = []
                     for n in range(job_hirer_cards.count()):
@@ -180,7 +180,7 @@ def _fetch_hits(
                     data_job["hirers"] = data_job_hirers
 
                     # Get job 'about' article
-                    page.wait_for_timeout(500)
+                    page.wait_for_timeout(DELAY)
                     about_article = job_details_wrapper.locator('article[class*="jobs-description__container"]').first
                     about_article_paras = about_article.locator('p, li')
                     about_text = ""
@@ -192,7 +192,7 @@ def _fetch_hits(
                     data_job["about"] = about_text
 
                     # Get company details (if they exist)
-                    page.wait_for_timeout(500)
+                    page.wait_for_timeout(DELAY)
                     data_job_company = {}
                     try:
                         about_company_sect = job_details_wrapper.locator('section[data-view-name="job-details-about-company-module"]').first
@@ -207,7 +207,7 @@ def _fetch_hits(
                     hits.append(data_job)
                     ## Hover ancestor div and scroll down (scrolls down the list of jobs)
                     div.hover()
-                    li_bbox = job_parent_item.bounding_box(timeout=500)
+                    li_bbox = job_parent_item.bounding_box(timeout=timeout_seconds)
                     page.mouse.wheel(0,li_bbox["height"] if li_bbox else 100)
                 except:
                         continue
@@ -225,7 +225,8 @@ def _parse_jobs_from_hits(
     hits        :list,
     *,
     save_local  :bool,
-    verbose     :bool
+    verbose     :bool,
+    filter      :bool = True
 ) -> list[Job]:
     jobs: list[Job] = []
     for h in hits:
@@ -236,18 +237,37 @@ def _parse_jobs_from_hits(
             "url"           : h["link"],
             "location"      : "",
             "contract_type" : "",
+            "description": h["about"],
             "unique_meta": {
                 "details": h["details"],
                 "preferences": h["preferences"],
                 "hirers": h["hirers"],
-                "description": h["about"],
                 "company": h.get("company", [])
             }
         }
         jobs.append(job)
+    if filter:
+        jobs = _filter_jobs(jobs)
     if save_local:
         save_jobs(jobs, verbose=verbose)
     return jobs
+
+## Filters Linkedin job posts by three criteria:
+# 1. Must have less than 100 applicants
+# 2. Must be less than one month old
+# 3. Must include "Internship" preference
+# Returns all which satisfy these criteria
+def _filter_jobs(jobs):
+    filtered_jobs = []
+    for job in jobs:
+        details = job.get("unique_meta", {}).get("details", [])
+        preferences = job.get("unique_meta", {}).get("preferences", [])
+        too_many_applied    = any("Over 100 people clicked apply" in d for d in details)
+        long_duration       = any("month" in d.lower() for d in details if "ago" in d.lower())
+        is_internship       = "Internship" in preferences
+        if not too_many_applied and not long_duration and is_internship:
+            filtered_jobs.append(job)
+    return filtered_jobs
 
 ##############
 # PUBLIC API #
@@ -260,15 +280,15 @@ def parse_jobs_fetch_hits(
     verbose         :bool   = False,
 ) -> list[Job]:
     hits = _fetch_hits(timeout_seconds, save_local=save_local, verbose=verbose)
-    return _parse_jobs_from_hits(hits, save_local=save_local, verbose=verbose)
+    return _parse_jobs_from_hits(hits, save_local=save_local, verbose=verbose, filter=True)
 
-def parse_jobs_cached_hits(
+def _parse_jobs_cached_hits(
     *,
     save_local  :bool = True,
     verbose     :bool = False
 ) -> list[Job]:
     hits = load_objects(source=SOURCE, dir=HITS_SAVE_DIR, verbose=verbose)
-    return _parse_jobs_from_hits(hits, save_local=save_local, verbose=verbose)
+    return _parse_jobs_from_hits(hits, save_local=save_local, verbose=verbose, filter=True)
 
 def load_cached_jobs(
     *,
@@ -281,4 +301,4 @@ def load_cached_jobs(
 ########
 
 if __name__ == "__main__":
-    parse_jobs_cached_hits(save_local=True, verbose=True)
+    _parse_jobs_cached_hits(save_local=True, verbose=True, filter=True)
